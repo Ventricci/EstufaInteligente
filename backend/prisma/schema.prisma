@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model addresses {
+  id             Int              @id @default(autoincrement())
+  cep            String           @db.VarChar(8)
+  street         String           @db.VarChar(160)
+  housenumber    Int
+  district       String           @db.VarChar(120)
+  city           String           @db.VarChar(160)
+  state          String           @db.VarChar(50)
+  adjunt         String?          @db.VarChar(160)
+  deleted        Boolean
+  greenhouses    greenhouses[]
+  users_adresses users_adresses[]
+}
+
+model devices {
+  id                  Int                   @id @default(autoincrement())
+  greenhousesid       Int
+  name                String                @db.VarChar(80)
+  category            devices_type
+  status              Boolean
+  deleted             Boolean
+  greenhouses         greenhouses           @relation(fields: [greenhousesid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  devices_coordinates devices_coordinates[]
+  readings            readings[]
+}
+
+model devices_coordinates {
+  id        Int     @id @default(autoincrement())
+  devicesid Int
+  longitude Decimal @db.Decimal(16, 16)
+  latitude  Decimal @db.Decimal(16, 16)
+  devices   devices @relation(fields: [devicesid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model greenhouses {
+  id                     Int                      @id @default(autoincrement())
+  name                   String                   @db.VarChar(120)
+  idealtemperature       Decimal?                 @db.Decimal(3, 2)
+  idealhumidty           Decimal?                 @db.Decimal(3, 2)
+  usersid                Int
+  addressesid            Int
+  deleted                Boolean
+  devices                devices[]
+  addresses              addresses                @relation(fields: [addressesid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users                  users                    @relation(fields: [usersid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  greenhouses_coodinates greenhouses_coodinates[]
+  greenhouses_plants     greenhouses_plants[]
+}
+
+model greenhouses_coodinates {
+  id            Int         @id @default(autoincrement())
+  greenhousesid Int
+  latitude      Decimal     @db.Decimal(16, 16)
+  longitude     Decimal     @db.Decimal(16, 16)
+  greenhouses   greenhouses @relation(fields: [greenhousesid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model greenhouses_plants {
+  id            Int         @id @default(autoincrement())
+  plantsid      Int
+  greenhousesid Int
+  greenhouses   greenhouses @relation(fields: [greenhousesid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  plants        plants      @relation(fields: [plantsid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model plants {
+  id                 Int                  @id @default(autoincrement())
+  description        String               @db.VarChar(120)
+  color              String               @db.VarChar(50)
+  idealtemperature   Decimal?             @db.Decimal(3, 2)
+  idealhumidity      Decimal?             @db.Decimal(3, 2)
+  lifecycle          plants_lifecycle
+  deleted            Boolean
+  greenhouses_plants greenhouses_plants[]
+}
+
+model readings {
+  id        Int                @id @default(autoincrement())
+  devicesid Int
+  value     Decimal            @db.Decimal(5, 2)
+  datetime  DateTime           @db.Timestamp(6)
+  greatness readings_greatness
+  devices   devices            @relation(fields: [devicesid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model users {
+  id             Int              @id @default(autoincrement())
+  name           String           @db.VarChar(80)
+  cpf            String           @db.VarChar(11)
+  email          String           @db.VarChar(160)
+  pass           String           @db.VarChar(30)
+  role           users_role
+  photo          String?          @db.VarChar(255)
+  deleted        Boolean
+  greenhouses    greenhouses[]
+  users_adresses users_adresses[]
+}
+
+model users_adresses {
+  id          Int       @id @default(autoincrement())
+  usersid     Int
+  addressesid Int
+  addresses   addresses @relation(fields: [addressesid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users       users     @relation(fields: [usersid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+enum devices_type {
+  sensor
+  activation
+}
+
+enum plants_lifecycle {
+  annuals
+  biennials
+  perennials
+}
+
+enum readings_greatness {
+  temperature
+  humidity
+}
+
+enum users_role {
+  adminitrator
+  client
+}
