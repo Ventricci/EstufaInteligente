@@ -5,3 +5,8 @@ export interface CreateUserDTO {
   pass: string;
   role: "Administrator" | "Client";
 }
+
+export interface AuthenticateUserDTO {
+  email: string;
+  pass: string;
+}
