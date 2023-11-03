@@ -134,23 +134,23 @@ model Users_Adresses {
 }
 
 enum Devices_Type {
-  Sensor
-  Activation
+  sensor
+  activation
 
   @@map("devices_type")
 }
 
 enum Plants_Lifecycle {
-  Annuals
-  Biennials
-  Perennials
+  annuals
+  biennials
+  perennials
 
   @@map("plants_lifecycle")
 }
 
 enum Readings_Greatness {
-  Temperature
-  Humidity
+  temperature
+  humidity
 
   @@map("readings_greatness")
 }
