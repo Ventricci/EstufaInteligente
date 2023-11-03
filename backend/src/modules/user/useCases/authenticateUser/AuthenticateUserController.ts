@@ -10,14 +10,23 @@ export class AuthenticateUserController {
     // email:
     const emailRegex = /\S+@\S+\.\S+/;
     if (!email || email.length > 160) {
-      return response.status(400).json({ error: "email is too long" });
+      return response
+        .status(400)
+        .json({
+          error:
+            "O banco de dados não aceita emails com mais de 160 caracteres",
+        });
     } else if (!emailRegex.test(email)) {
-      return response.status(400).json({ error: "email is invalid" });
+      return response.status(400).json({ error: "O email é inválido" });
     }
 
     // pass:
     if (!pass || pass.length > 30) {
-      return response.status(400).json({ error: "pass is too long" });
+      return response
+        .status(400)
+        .json({
+          error: "O banco de dados não aceita senhas com mais de 30 caracteres",
+        });
     }
 
     const authenticateUserUseCase = new AuthenticateUserUseCase();

@@ -9,7 +9,7 @@ export class CreateUserUseCase {
     email,
     pass,
     role,
-  }: CreateUserDTO): Promise<Users> {
+  }: CreateUserDTO): Promise<Users | null> {
     // Verify if user already exists
     const userAlreadyExists = await prisma.users.findFirst({
       where: {
@@ -17,9 +17,7 @@ export class CreateUserUseCase {
       },
     });
 
-    if (userAlreadyExists) {
-      throw new Error("User already exists");
-    }
+    if (userAlreadyExists) return null;
 
     // Create user
     const user = await prisma.users.create({

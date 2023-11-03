@@ -9,26 +9,36 @@ export class CreateUserController {
     // validando se os campos estão corretos
     // name:
     if (!name || name.length > 80) {
-      return response.status(400).json({ error: "name is too long" });
+      return response.status(400).json({
+        error: "O banco de dados não aceita nomes com mais de 80 caracteres",
+      });
     }
     // cpf:
     if (!cpf || cpf.length !== 11) {
-      return response.status(400).json({ error: "cpf is invalid" });
+      return response
+        .status(400)
+        .json({ error: "O tamanho do cpf deve ser de 11 caracteres" });
     }
     // email:
     const emailRegex = /\S+@\S+\.\S+/;
     if (!email || email.length > 160) {
-      return response.status(400).json({ error: "email is too long" });
+      return response.status(400).json({
+        error: "O banco de dados não aceita emails com mais de 160 caracteres",
+      });
     } else if (!emailRegex.test(email)) {
-      return response.status(400).json({ error: "email is invalid" });
+      return response.status(400).json({ error: "O email é inválido" });
     }
     // pass:
     if (!pass || pass.length > 30) {
-      return response.status(400).json({ error: "pass is too long" });
+      return response.status(400).json({
+        error: "O banco de dados não aceita senhas com mais de 30 caracteres",
+      });
     }
     // role:
     if (!role || (role !== "Administrator" && role !== "Client")) {
-      return response.status(400).json({ error: "role is invalid" });
+      return response
+        .status(400)
+        .json({ error: "A função só pode ser 'Administrator' ou 'Client'" });
     }
 
     const createUserUseCase = new CreateUserUseCase();
@@ -41,6 +51,12 @@ export class CreateUserController {
       role,
     });
 
-    return response.status(201).json(result);
+    if (result) {
+      return response.status(201).json(result);
+    } else {
+      return response
+        .status(409)
+        .json({ error: "Um usuário com esse cpf já está cadastrado" });
+    }
   }
 }

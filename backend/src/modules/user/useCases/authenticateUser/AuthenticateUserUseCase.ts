@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 interface IResponse {
   auth: boolean;
   token: string | null;
+  errorMessage?: string;
 }
 
 export class AuthenticateUserUseCase {
@@ -18,12 +19,20 @@ export class AuthenticateUserUseCase {
     });
 
     if (!user) {
-      return { auth: false, token: null };
+      return {
+        auth: false,
+        token: null,
+        errorMessage: "O email informado não está cadastrado",
+      };
     }
 
     // Verify if pass is correct
     if (user.pass !== pass) {
-      return { auth: false, token: null };
+      return {
+        auth: false,
+        token: null,
+        errorMessage: "A senha informada está incorreta",
+      };
     }
 
     // Generate token
@@ -38,6 +47,13 @@ export class AuthenticateUserUseCase {
       }
     );
 
-    return { auth: true, token: token };
+    if (!token)
+      return {
+        auth: false,
+        token: null,
+        errorMessage: "Erro ao gerar token",
+      };
+
+    return { auth: true, token };
   }
 }
