@@ -18,12 +18,10 @@ const VerifyToken = (req: Request, res: Response, next: NextFunction) => {
 
   jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
     if (err) {
-      return res
-        .status(401)
-        .json({
-          auth: false,
-          errorMessage: "Houve um erro ao validar o token",
-        });
+      return res.status(401).json({
+        auth: false,
+        errorMessage: "Houve um erro ao validar o token",
+      });
     }
 
     // Verificando se decoded é um objeto e se ele possui a propriedade email
@@ -31,19 +29,17 @@ const VerifyToken = (req: Request, res: Response, next: NextFunction) => {
       // Se sim, então o token é válido
       req.body.email = decoded.email;
     } else {
-      return res
-        .status(401)
-        .json({
-          auth: false,
-          errorMessage: "Houve um erro ao validar o token",
-        });
+      return res.status(401).json({
+        auth: false,
+        errorMessage: "Houve um erro ao validar o token",
+      });
     }
     next();
   });
 };
 
 routes.use("/users", userRoutes);
-routes.use("/mqtt", mqttRoutes);
+routes.use("/mqtt", VerifyToken, mqttRoutes);
 routes.use("/readings", readingsRoutes); // TODO: routes.use("/readings", VerifyToken, readingsRoutes);
 routes.use("/auth", authRoutes);
 
