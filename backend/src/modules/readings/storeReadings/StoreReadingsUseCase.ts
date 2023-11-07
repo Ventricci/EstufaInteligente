@@ -1,12 +1,14 @@
+import { Devices_Type } from "@prisma/client";
 import { prisma } from "../../../prisma/client";
 import { StoreReadingsDTO } from "../dtos/ReadingsDTO";
 
 export class StoreReadingsUseCase {
-  async execute({ greatness, deviceId, value, dateTime }: StoreReadingsDTO) {
+  async execute({ greatness, serial, value, dateTime }: StoreReadingsDTO) {
     // Verificando se o dispositivo existe
     const deviceAlreadyExists = await prisma.devices.findFirst({
       where: {
-        id: deviceId,
+        serial,
+        category: Devices_Type.sensor,
       },
     });
 
@@ -18,7 +20,7 @@ export class StoreReadingsUseCase {
     const reading = await prisma.readings.create({
       data: {
         value,
-        devicesid: deviceId,
+        devicesid: deviceAlreadyExists.id,
         datetime: dateTime,
         greatness,
       },

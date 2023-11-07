@@ -6,5 +6,7 @@ declare namespace NodeJS {
     MQTT_PASSWORD: string;
     MQTT_CLIENT_ID: string;
     JWT_SECRET: string;
+    MQTT_TOPIC_TEMPERATURE: string;
+    MQTT_TOPIC_HUMIDITY: string;
   }
 }

@@ -7,23 +7,23 @@ export class StoreReadingsController {
     const storeReadingsUseCase = new StoreReadingsUseCase();
 
     const greatness: Readings_Greatness | null =
-      topic === "MONITORAMENTO/TEMPERATURA"
+      topic === process.env.MQTT_TOPIC_TEMPERATURE
         ? Readings_Greatness.temperature
-        : topic === "MONITORAMENTO/UMIDADE"
+        : topic === process.env.MQTT_TOPIC_HUMIDITY
         ? Readings_Greatness.humidity
         : null;
 
     // message é do tipo: dispositivoId.valor.timestamp
-    const deviceId = Number(message.split(".")[0]);
-    const value = Number(message.split(".")[1]);
-    const timestamp = message.split(".")[2];
+    const serial = message.split("\t")[0].trim();
+    const value = Number(message.split("\t")[1]);
+    const timestamp = message.split("\t")[2];
     const dateTime = new Date(timestamp);
     dateTime.setUTCHours(dateTime.getUTCHours() - 3);
 
     if (!greatness) {
       result = new Error("Invalid topic");
-    } else if (!deviceId) {
-      result = new Error("Invalid device id");
+    } else if (!serial) {
+      result = new Error("Invalid device serial");
     } else if (!value) {
       result = new Error("Invalid value");
     } else if (!dateTime) {
@@ -31,7 +31,7 @@ export class StoreReadingsController {
     } else {
       result = await storeReadingsUseCase.execute({
         greatness,
-        deviceId,
+        serial,
         value,
         dateTime,
       });
