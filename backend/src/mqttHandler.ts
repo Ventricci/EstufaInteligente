@@ -1,6 +1,6 @@
 import * as mqtt from "mqtt";
 import dotenv from "dotenv";
-import { StoreReadingsController } from "./modules/readings/storeReadings/StoreReadingsController";
+import { StoreReadingsController } from "./modules/readings/useCases/storeReadings/StoreReadingsController";
 import { Readings } from "@prisma/client";
 
 dotenv.config();
