@@ -1,6 +1,6 @@
 import { Devices_Type } from "@prisma/client";
-import { prisma } from "../../../prisma/client";
-import { StoreReadingsDTO } from "../dtos/ReadingsDTO";
+import { prisma } from "../../../../prisma/client";
+import { StoreReadingsDTO } from "../../dtos/ReadingsDTO";
 
 export class StoreReadingsUseCase {
   async execute({ greatness, serial, value, dateTime }: StoreReadingsDTO) {

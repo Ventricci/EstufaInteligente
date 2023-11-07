@@ -10,7 +10,6 @@ export interface GetReadingsDTO {
 export interface StoreReadingsDTO {
   serial: string;
   greatness: Readings_Greatness;
-  deviceId: number;
   value: number;
   dateTime: Date;
 }
