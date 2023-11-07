@@ -10,7 +10,7 @@ const getReadingsController = new GetReadingsController();
 const readingsRoutes = Router();
 
 readingsRoutes.get(
-  "/:greatness/:initialDate/:finalDate/:deviceId",
+  "/:greenhousesid/:greatness/:initialDate/:finalDate/",
   getReadingsController.handle
 );
 

@@ -1,34 +1,41 @@
-import { Readings } from "@prisma/client";
+import { Devices_Type, Readings } from "@prisma/client";
 import { prisma } from "../../../../prisma/client";
 import { GetReadingsDTO } from "../../dtos/ReadingsDTO";
 
-/**
- * [GET] `/readings/:greatness/:initialDate/:finalDate/:deviceId` - Retorna todas as leituras de determinada grandeza de um dispositivo em um intervalo de tempo
- */
+interface ErrorResponse {
+  errorMessage: string;
+} // TODO: mudar para o arquivo de interfaces
 
 export class GetReadingsUseCase {
   async execute({
+    greenhouseId,
     greatness,
     initialDate,
     finalDate,
-    deviceId,
-  }: GetReadingsDTO): Promise<Readings[]> {
-    // Verify if device exists
-    const deviceExists = await prisma.devices.findFirst({
+  }: GetReadingsDTO): Promise<Readings[] | ErrorResponse> {
+    const greenhouseExists = await prisma.greenhouses.findFirst({
       where: {
-        id: deviceId,
+        id: greenhouseId,
       },
     });
 
-    if (!deviceExists) {
-      throw new Error("Device does not exists");
-    }
+    if (!greenhouseExists) return { errorMessage: "Estufa não encontrada" };
 
-    // Verify if readings exists
-    const readingsExists = await prisma.readings.findMany({
+    const devices = await prisma.devices.findMany({
       where: {
+        greenhousesid: greenhouseId,
+        category: Devices_Type.sensor,
+      },
+    });
+
+    if (!devices) return { errorMessage: "Dispositivos não encontrados" };
+
+    const readings = await prisma.readings.findMany({
+      where: {
+        devicesid: {
+          in: devices.map((device) => device.id),
+        },
         greatness,
-        devicesid: deviceId,
         datetime: {
           gte: initialDate,
           lte: finalDate,
@@ -36,25 +43,32 @@ export class GetReadingsUseCase {
       },
     });
 
-    if (!readingsExists) {
-      throw new Error("Readings does not exists");
+    if (!readings) return { errorMessage: "Leituras não encontradas" };
+
+    // Criar um mapa para agrupar as leituras por dispositivo
+    const readingsByDevice = new Map();
+
+    for (const reading of readings) {
+      const { devicesid, id, value, datetime } = reading;
+
+      // Verifica se já existe uma entrada para o dispositivo no mapa
+      if (!readingsByDevice.has(devicesid)) {
+        readingsByDevice.set(devicesid, {
+          deviceId: devicesid,
+          readings: [],
+        });
+      }
+
+      // Adiciona a leitura ao dispositivo correspondente no mapa
+      const deviceReadings = readingsByDevice.get(devicesid).readings;
+      deviceReadings.push({ id, value, datetime });
     }
 
-    // Get readings
-    const readings = await prisma.readings.findMany({
-      where: {
-        greatness,
-        devicesid: deviceId,
-        datetime: {
-          gte: new Date(initialDate),
-          lte: new Date(finalDate),
-        },
-      },
-      orderBy: {
-        datetime: "asc",
-      },
-    });
+    // Converter o mapa de volta para um array de objetos
+    const groupedReadings = [...readingsByDevice.values()];
 
-    return readings;
+    if (!groupedReadings) return { errorMessage: "Falha ao agrupar leituras" };
+
+    return groupedReadings;
   }
 }
