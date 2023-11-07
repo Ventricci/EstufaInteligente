@@ -42,5 +42,6 @@ routes.use("/users", userRoutes);
 routes.use("/mqtt", VerifyToken, mqttRoutes);
 routes.use("/readings", readingsRoutes); // TODO: routes.use("/readings", VerifyToken, readingsRoutes);
 routes.use("/auth", authRoutes);
+routes.use("/devices", VerifyToken, readingsRoutes);
 
 export { routes };
