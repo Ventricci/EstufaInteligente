@@ -6,8 +6,6 @@ import { Readings } from "@prisma/client";
 dotenv.config();
 
 const TESTTOPIC = "test";
-const TEMPTOPIC = "MONITORAMENTO/TEMPERATURA";
-const HUMITOPIC = "MONITORAMENTO/UMIDADE";
 const LUMITOPIC = "ACIONAMENTO/LUMINOSIDADE";
 
 class MqttHandler {
@@ -48,22 +46,30 @@ class MqttHandler {
       console.log("[✓] Conectado ao broker!\n");
     });
 
-    this.client.connected &&
-      this.client.subscribe([TEMPTOPIC, HUMITOPIC], (error) => {
-        if (error) {
-          console.log(
-            `[x] Não foi possível se inscrever nos tópicos: ${error}\n`
-          );
-        } else {
-          console.log(
-            `[✓] Inscrito nos seguintes tópicos:\n- ${TEMPTOPIC}\n- ${HUMITOPIC}\n`
-          );
+    this.client.on("connect", () => {
+      this.client?.subscribe(
+        [process.env.MQTT_TOPIC_TEMPERATURE, process.env.MQTT_TOPIC_HUMIDITY],
+        (error) => {
+          if (error) {
+            console.log(
+              `[x] Não foi possível se inscrever nos tópicos: ${error}\n`
+            );
+          } else {
+            console.log(
+              `[✓] Inscrito nos seguintes tópicos:\n- ${process.env.MQTT_TOPIC_TEMPERATURE}\n- ${process.env.MQTT_TOPIC_HUMIDITY}\n`
+            );
+          }
         }
-      });
+      );
+    });
 
     this.client.on("message", (topic, message) => {
       console.log(`[✓] Recebido mensagem do tópico ${topic}: "${message}"\n`);
-      if (topic === TEMPTOPIC || topic === HUMITOPIC) {
+      // if (topic === TEMPTOPIC || topic === HUMITOPIC) {
+      if (
+        topic === process.env.MQTT_TOPIC_TEMPERATURE ||
+        topic === process.env.MQTT_TOPIC_HUMIDITY
+      ) {
         console.log("[_] Armazenando dados no banco de dados...");
         this.storeReadingsController
           .handle(topic, message.toString())
