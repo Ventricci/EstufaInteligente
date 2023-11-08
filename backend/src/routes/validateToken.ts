@@ -18,10 +18,10 @@ const ValidateToken = (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    // Verificando se decoded é um objeto e se ele possui a propriedade email
-    if (typeof decoded === "object" && decoded.hasOwnProperty("email")) {
+    // Verificando se decoded é um objeto e se ele possui a propriedade cpf
+    if (typeof decoded === "object" && decoded.hasOwnProperty("cpf")) {
       // Se sim, então o token é válido
-      req.body.email = decoded.email;
+      req.body.cpf = decoded.cpf;
     } else {
       return res.status(401).json({
         auth: false,

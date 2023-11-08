@@ -38,7 +38,7 @@ export class AuthenticateUserUseCase {
     // Generate token
     const token = jwt.sign(
       {
-        email: user.email,
+        cpf: user.cpf,
       },
       process.env.JWT_SECRET,
       {
