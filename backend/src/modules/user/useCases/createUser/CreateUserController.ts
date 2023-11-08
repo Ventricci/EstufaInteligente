@@ -2,8 +2,6 @@ import { Request, Response } from "express";
 import { CreateUserUseCase } from "./CreateUserUseCase";
 import { CreateUserDTO } from "../../dtos/UserDTO";
 import { Users_Role } from "@prisma/client";
-import { CreateAddressesDTO } from "../../../addresses/dtos/AddressesDTO";
-import { CreateAddressesUseCase } from "../../../addresses/useCases/createAddresses/CreateAddressesUseCase";
 
 export class CreateUserController {
   async handle(request: Request, response: Response) {
