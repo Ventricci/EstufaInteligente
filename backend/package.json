@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "18"
+  },
   "scripts": {
-    "start": "node ./dist/server.js",
-    "build": "rm -rf ./dist && tsc",
+    "start": "node dist/server.js",
+    "build": "rm -rf dist && tsup src",
     "dev": "ts-node-dev --exit-child --transpile-only --ignore-watch node_modules src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -25,6 +28,7 @@
     "@types/node": "^20.8.10",
     "prisma": "^5.5.2",
     "ts-node-dev": "^2.0.0",
+    "tsup": "^7.2.0",
     "typescript": "^5.2.2"
   }
 }

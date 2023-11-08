@@ -14,6 +14,6 @@ app.use(express.json());
 
 app.use(routes);
 
-app.listen(3000, () => {
+app.listen(process.env.PORT ? Number(process.env.PORT) : 3000, () => {
   console.log("[SERVER] Running on port 3000 🚀");
 });
