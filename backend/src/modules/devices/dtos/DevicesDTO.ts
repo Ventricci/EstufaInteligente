@@ -7,3 +7,8 @@ export interface CreateDeviceDTO {
   serial: string;
   greenhousesid: number;
 }
+
+export interface ListDevicesByGreenhouseDTO {
+  greenhouse_id: number;
+  user_cpf: string;
+}
