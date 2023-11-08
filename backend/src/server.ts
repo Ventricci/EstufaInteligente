@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const port = process.env.PORT || 3000;
+
 export const mqttClient = new MqttHandler();
 mqttClient.connect();
 
@@ -14,6 +16,6 @@ app.use(express.json());
 
 app.use(routes);
 
-app.listen(process.env.PORT ? Number(process.env.PORT) : 3000, () => {
-  console.log("[SERVER] Running on port 3000 🚀");
+app.listen(port, () => {
+  console.log(`[SERVER] Running on port ${port}  🚀`);
 });
