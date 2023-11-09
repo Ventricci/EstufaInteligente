@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const port = process.env.PORT || 3333;
+const port = process.env.PORT ? Number(process.env.PORT) : 3333;
 
 export const mqttClient = new MqttHandler();
 mqttClient.connect();
