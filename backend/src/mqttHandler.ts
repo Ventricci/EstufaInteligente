@@ -2,6 +2,10 @@ import * as mqtt from "mqtt";
 import dotenv from "dotenv";
 import { StoreReadingsController } from "./modules/readings/useCases/storeReadings/StoreReadingsController";
 import { Readings } from "@prisma/client";
+import {
+  IResponse,
+  UpdateDeviceStatusController,
+} from "./modules/devices/useCases/updateDeviceStatus/UpdateDeviceStatusController";
 
 dotenv.config();
 
@@ -14,7 +18,8 @@ class MqttHandler {
   private username: string;
   private password: string;
   private protocol: mqtt.MqttProtocol;
-  private storeReadingsController: any;
+  private storeReadingsController: any; // TODO: verifique se é possível tipar esse controller
+  private updateDeviceStatusController: any; // TODO: verifique se é possível tipar esse controller
 
   constructor() {
     this.client = null;
@@ -24,6 +29,7 @@ class MqttHandler {
     this.protocol = "mqtts";
 
     this.storeReadingsController = new StoreReadingsController();
+    this.updateDeviceStatusController = new UpdateDeviceStatusController();
   }
 
   public connect() {
@@ -82,6 +88,25 @@ class MqttHandler {
               console.log("[✓] Dados armazenados com sucesso!\n");
             }
           });
+      } else if (topic.startsWith("RESPOSTA/")) {
+        console.log("[_] Atualizando o status do dispositivo...");
+        this.updateDeviceStatusController
+          .handle(topic, message.toString())
+          .then((result: IResponse) => {
+            if (result.success) {
+              console.log(
+                "[✓] Status do dispositivo atualizado com sucesso!\n"
+              );
+            } else if (result.error) {
+              console.log(
+                "[x] Não foi possível atualizar o status do dispositivo.\n"
+              );
+            } else {
+              console.log(
+                "[x] Erro não identificado ao atualizar o status do dispositivo.\n"
+              );
+            }
+          });
       }
     });
 
@@ -115,6 +140,18 @@ class MqttHandler {
           "[x] Não foi possível enviar a mensagem: Client não conectado.\n"
         );
         reject(false); // Rejeitando a promessa com "false" em caso de erro
+      }
+    });
+  }
+
+  public subscribe(topic: string): void {
+    this.client?.subscribe(topic, (error) => {
+      if (error) {
+        console.log(
+          `[x] Não foi possível se inscrever em ${topic}: ${error}\n`
+        );
+      } else {
+        console.log(`[✓] Inscrito no tópico ${topic}\n`);
       }
     });
   }
