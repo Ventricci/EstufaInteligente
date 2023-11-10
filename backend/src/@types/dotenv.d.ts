@@ -1,5 +1,6 @@
 declare namespace NodeJS {
   interface ProcessEnv {
+    PORT: string;
     MQTT_HOST: string;
     MQTT_PORT: string;
     MQTT_USERNAME: string;

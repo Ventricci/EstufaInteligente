@@ -2,13 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/server.js",
-  "engines": {
-    "node": "18"
-  },
+  "main": "server.js",
   "scripts": {
     "start": "node dist/server.js",
-    "build": "rm -rf dist && tsup src",
+    "build": "tsup src",
     "dev": "ts-node-dev --exit-child --transpile-only --ignore-watch node_modules src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
