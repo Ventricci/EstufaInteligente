@@ -12,3 +12,12 @@ export interface ListDevicesByGreenhouseDTO {
   greenhouse_id: number;
   user_cpf: string;
 }
+
+export interface UpdateDeviceStatusDTO {
+  deviceSerial: string;
+  deviceStatus: boolean;
+}
+
+export interface GetDeviceStatusDTO {
+  deviceId: number;
+}
