@@ -65,7 +65,7 @@ class MqttHandler {
 
     this.client.on("message", (topic, message) => {
       console.log(`[✓] Recebido mensagem do tópico ${topic}: "${message}"\n`);
-      // if (topic === TEMPTOPIC || topic === HUMITOPIC) {
+
       if (
         topic === process.env.MQTT_TOPIC_TEMPERATURE ||
         topic === process.env.MQTT_TOPIC_HUMIDITY
