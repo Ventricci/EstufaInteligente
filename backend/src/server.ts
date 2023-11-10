@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const mqttClient = new MqttHandler();
-// mqttClient.connect();
+mqttClient.connect();
 
 const app = express();
 
