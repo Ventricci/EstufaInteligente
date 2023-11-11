@@ -1,0 +1,147 @@
+Rotas user:
+- [POST] /users/signup
+  - request body:
+  {
+    "name": "Nome do usuário",
+    "cpf": "12345678901",
+    "email": "user@email.com",
+    "pass": "123456",
+    "cep": "11222333",
+    "street": "Rua do usuário",
+    "houseNumber": 1020,
+    "district": "Bairro do usuário",
+    "city": "Cidade do usuário",
+    "state": "Estado do usuário",
+    "adjunct": "Complemento do usuário"
+  }
+  - response body:
+  { successMessage: "Usuário criado com sucesso!" }
+
+- [POST] /users/signin
+  - request body:
+  {
+    "email": "user@email.com",
+    "pass": "123456"
+  }
+  - response body:
+  {
+    "errorMessage": "Em caso de erro, essa propriedade é retornada. Caso contrário, ela não é retornada."
+  } ou, em caso de sucesso, algo como:
+  {
+    "auth": true,
+    "token": "tokengeradopelojtwt"
+  }
+
+Rotas actuation:
+- [POST] /actuation/:deviceId
+  - request body: Nenhum
+  - response body:
+  {
+    "errorMessage": "Em caso de erro, essa propriedade é retornada. Caso contrário, ela não é retornada.",
+  } ou, em caso de sucesso, algo como:
+  {
+    "successMessage": "Mensagem enviada com sucesso. Para receber a resposta, solicite o status do dispositivo em alguns segundos."
+  }
+
+Rotas readings:
+- [GET] /readings/:greenhousesid/:greatness/:initialDate/:finalDate
+  - request body: Nenhum
+  - response body:
+  {
+    "errorMessage": "Em caso de erro, essa propriedade é retornada. Caso contrário, ela não é retornada.",
+  } ou, em caso de sucesso, algo como:
+  [
+    {
+      "deviceId": 6,
+      "readings": [
+        {
+          "id": 24,
+          "value": "24.1",
+          "datetime": "2023-11-06T21:18:47.745Z"
+        },
+        {
+          "id": 25,
+          "value": "24.1",
+          "datetime": "2023-11-06T21:18:49.749Z"
+        },
+        {
+          "id": 27,
+          "value": "24.1",
+          "datetime": "2023-11-06T21:18:51.753Z"
+        },
+      ],
+    },
+    {
+      "deviceId": 7,
+      "readings": [
+        {
+          "id": 29,
+          "value": "24.2",
+          "datetime": "2023-11-06T21:18:53.757Z"
+        },
+        {
+          "id": 31,
+          "value": "24.2",
+          "datetime": "2023-11-06T21:18:55.760Z"
+        },
+        {
+          "id": 33,
+          "value": "24.2",
+          "datetime": "2023-11-06T21:18:57.764Z"
+        },
+      ]
+    },
+  ]
+
+Rotas devices:
+- [POST] /devices/create
+  - request body:
+  {
+    "name": "Nome do dispositivo",
+    "category": "Categoria do dispositivo",
+    "status": "Status do dispositivo",
+    "serial": "Serial do dispositivo",
+    "greenhouseId": 1
+  }
+  - response body:
+  {
+    "errorMessage": "Em caso de erro, essa propriedade é retornada. Caso contrário, ela não é retornada.",
+  } ou, em caso de sucesso, algo como:
+  {
+    "successMessage": "Dispositivo criado com sucesso!"
+  }
+
+- [GET] /devices/status/:deviceId
+  - request body: Nenhum
+  - response body:
+  {
+    "errorMessage": "Em caso de erro, essa propriedade é retornada. Caso contrário, ela não é retornada.",
+  } ou, em caso de sucesso, algo como:
+  {
+    "status": "Ligado" ou "Desligado"
+  }
+
+  - [GET] /devices/listByGreenhouse/:greenhouseId
+  - request body: Nenhum
+  - response body:
+  {
+    "errorMessage": "Em caso de erro, essa propriedade é retornada. Caso contrário, ela não é retornada.",
+  } ou, em caso de sucesso, algo como:
+  [
+    {
+      "id": 6,
+      "name": "Nome do dispositivo",
+      "category": "Categoria do dispositivo",
+      "status": "Status do dispositivo",
+      "serial": "Serial do dispositivo",
+      "greenhouseId": 1
+    },
+    {
+      "id": 7,
+      "name": "Nome do dispositivo",
+      "category": "Categoria do dispositivo",
+      "status": "Status do dispositivo",
+      "serial": "Serial do dispositivo",
+      "greenhouseId": 1
+    },
+  ]
