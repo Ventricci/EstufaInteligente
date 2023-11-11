@@ -11,7 +11,8 @@ export class CreateDeviceController {
     // name:
     if (!name || name.length > 80) {
       return response.status(400).json({
-        error: "O banco de dados não aceita nomes com mais de 80 caracteres",
+        errorMessage:
+          "O banco de dados não aceita nomes com mais de 80 caracteres",
       });
     }
     // category:
@@ -20,25 +21,26 @@ export class CreateDeviceController {
       (category !== Devices_Type.sensor && category !== Devices_Type.activation)
     ) {
       return response.status(400).json({
-        error: "A categoria só pode ser 'sensor' ou 'activation'",
+        errorMessage: "A categoria só pode ser 'sensor' ou 'activation'",
       });
     }
     // status:
     if (status === undefined) {
       return response.status(400).json({
-        error: "O status não pode ser undefined",
+        errorMessage: "O status não pode ser undefined",
       });
     }
     // serial:
     if (!serial || serial.length > 80) {
       return response.status(400).json({
-        error: "O banco de dados não aceita seriais com mais de 80 caracteres",
+        errorMessage:
+          "O banco de dados não aceita seriais com mais de 80 caracteres",
       });
     }
     // greenhousesid:
     if (!greenhousesid) {
       return response.status(400).json({
-        error: "O id da estufa não pode ser undefined",
+        errorMessage: "O id da estufa não pode ser undefined",
       });
     }
 
@@ -52,15 +54,10 @@ export class CreateDeviceController {
       greenhousesid,
     });
 
-    if (result) {
-      return response.status(201).json(result);
+    if (result.errorMessage) {
+      return response.status(400).send(result);
     } else {
-      return response
-        .status(409)
-        .json({
-          error:
-            "Um dispositivo dessa categoria e com esse serial já está cadastrado",
-        });
+      return response.status(201).send(result);
     }
   }
 }
