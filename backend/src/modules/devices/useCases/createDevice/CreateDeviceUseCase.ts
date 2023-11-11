@@ -16,7 +16,11 @@ export class CreateDeviceUseCase {
         category,
       },
     });
-    if (deviceAlreadyExists) return null;
+    if (deviceAlreadyExists)
+      return {
+        errorMessage:
+          "Um dispositivo dessa categoria e com esse serial já está cadastrado",
+      };
     // Create device
     const device = await prisma.devices.create({
       data: {
@@ -28,6 +32,8 @@ export class CreateDeviceUseCase {
         deleted: false,
       },
     });
-    return device;
+    return device
+      ? { successMessage: "Dispositivo criado com sucesso!" }
+      : { errorMessage: "Houve um erro ao criar o dispositivo" };
   }
 }

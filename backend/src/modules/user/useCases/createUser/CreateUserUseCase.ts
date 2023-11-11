@@ -3,7 +3,8 @@ import { prisma } from "../../../../prisma/client";
 import { CreateUserDTO } from "../../dtos/UserDTO";
 
 interface IResponse {
-  errorMessage: string;
+  errorMessage?: string;
+  successMessage?: string;
 }
 
 export class CreateUserUseCase {
@@ -72,6 +73,6 @@ export class CreateUserUseCase {
       },
     });
 
-    return user;
+    return { successMessage: "Usuário criado com sucesso!" };
   }
 }
