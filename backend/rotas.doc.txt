@@ -32,6 +32,7 @@ Rotas user:
     "token": "tokengeradopelojtwt"
   }
 
+Rotas actuation:
 - [POST] /actuation/:deviceId
   - request body: Nenhum
   - response body:
@@ -42,6 +43,7 @@ Rotas user:
     "successMessage": "Mensagem enviada com sucesso. Para receber a resposta, solicite o status do dispositivo em alguns segundos."
   }
 
+Rotas readings:
 - [GET] /readings/:greenhousesid/:greatness/:initialDate/:finalDate
   - request body: Nenhum
   - response body:
@@ -91,6 +93,7 @@ Rotas user:
     },
   ]
 
+Rotas devices:
 - [POST] /devices/create
   - request body:
   {
