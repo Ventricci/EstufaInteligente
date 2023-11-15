@@ -4,6 +4,7 @@ import { userRoutes } from "./user.routes";
 import { actuationRoutes } from "./actuation.routes";
 import { readingsRoutes } from "./readings.routes";
 import { devicesRoutes } from "./devices.routes";
+import { greenhousesRoutes } from "./greenhouses.routes";
 
 const routes = Router();
 
@@ -13,5 +14,6 @@ routes.use("/users", userRoutes);
 routes.use("/actuation", actuationRoutes);
 routes.use("/readings", readingsRoutes);
 routes.use("/devices", devicesRoutes);
+routes.use("/greenhouses", greenhousesRoutes);
 
 export { routes };
