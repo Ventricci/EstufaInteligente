@@ -1,11 +1,18 @@
-import { Users } from "@prisma/client";
+import { Greenhouses, Users } from "@prisma/client";
 import { prisma } from "../../../../prisma/client";
 import { AuthenticateUserDTO } from "../../dtos/UserDTO";
 import jwt from "jsonwebtoken";
 
 interface IResponse {
   auth: boolean;
-  token: string | null;
+  token?: string | null;
+  id?: Users["id"];
+  name?: Users["name"];
+  cpf?: Users["cpf"];
+  email?: Users["email"];
+  role?: Users["role"];
+  photo?: Users["photo"];
+  greenhouses?: Greenhouses["id"][];
   errorMessage?: string;
 }
 
@@ -54,6 +61,32 @@ export class AuthenticateUserUseCase {
         errorMessage: "Erro ao gerar token",
       };
 
-    return { auth: true, token };
+    // Get user greenhouses
+    const greenhouses = await prisma.users
+      .findFirst({
+        where: {
+          id: user.id,
+        },
+      })
+      .greenhouses()
+      .then((greenhouses) => {
+        return greenhouses
+          ? greenhouses.map((greenhouse) => {
+              return greenhouse.id;
+            })
+          : [];
+      });
+
+    return {
+      auth: true,
+      token,
+      id: user.id,
+      name: user.name,
+      cpf: user.cpf,
+      email: user.email,
+      role: user.role,
+      photo: user.photo,
+      greenhouses,
+    };
   }
 }
