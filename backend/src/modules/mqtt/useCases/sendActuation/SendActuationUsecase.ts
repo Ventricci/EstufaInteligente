@@ -27,7 +27,7 @@ export class SendActuationUseCase {
 
     // Enviar uma mensagem de acionamento para o tópico ACIONAMENTO/<serial>
     const action = deviceExists.status === true ? "0" : "1";
-    const topic = `ACIONAMENTO/${deviceSerial}`;
+    const topic = `${process.env.MQTT_TOPIC_ACTUATION}/${deviceSerial}`;
 
     const result = mqttClient.sendMessage(topic, action);
 
