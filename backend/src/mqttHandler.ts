@@ -66,7 +66,7 @@ class MqttHandler {
             );
           } else {
             console.log(
-              `[✓] Inscrito nos seguintes tópicos:\n- ${process.env.MQTT_TOPIC_TEMPERATURE}\n- ${process.env.MQTT_TOPIC_HUMIDITY}\n`
+              `[✓] Inscrito nos seguintes tópicos:\n- ${process.env.MQTT_TOPIC_TEMPERATURE}\n- ${process.env.MQTT_TOPIC_HUMIDITY}\n- ${process.env.MQTT_TOPIC_GREENHOUSE_STATUS}\n`
             );
           }
         }
@@ -92,7 +92,7 @@ class MqttHandler {
               console.log("[✓] Dados armazenados com sucesso!\n");
             }
           });
-      } else if (topic.startsWith("RESPOSTA/")) {
+      } else if (topic === process.env.MQTT_TOPIC_GREENHOUSE_STATUS) {
         console.log("[_] Atualizando o status do dispositivo...");
         this.updateDeviceStatusController
           .handle(topic, message.toString())
