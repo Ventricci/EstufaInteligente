@@ -31,7 +31,7 @@ export class UpdateDeviceStatusUseCase {
         id: deviceId.id,
       },
       data: {
-        status: deviceStatus,
+        status: deviceStatus === "1" ? true : false,
       },
     });
 

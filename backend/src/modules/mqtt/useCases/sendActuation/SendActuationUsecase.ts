@@ -26,21 +26,20 @@ export class SendActuationUseCase {
     const deviceSerial = deviceExists.serial;
 
     // Enviar uma mensagem de acionamento para o tópico ACIONAMENTO/<serial>
-    const message = "Change the device state";
+    const action = deviceExists.status === true ? "0" : "1";
     const topic = `ACIONAMENTO/${deviceSerial}`;
 
-    const result = mqttClient.sendMessage(topic, message);
+    const result = mqttClient.sendMessage(topic, action);
 
     if (!result) {
       return {
         errorMessage: "Ocorreu um erro ao enviar a mensagem",
       };
     } else {
-      // Se inscrever no tópico RESPOSTA/<serial>
-      mqttClient.subscribe(`RESPOSTA/${deviceSerial}`);
       return {
-        successMessage:
-          "Mensagem enviada com sucesso. Para receber a resposta, solicite o status do dispositivo em alguns segundos.",
+        successMessage: `O dispositivo está sendo ${
+          deviceExists.status === true ? "desligado" : "ligado"
+        }.`,
       };
     }
   }

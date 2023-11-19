@@ -15,7 +15,7 @@ export interface ListDevicesByGreenhouseDTO {
 
 export interface UpdateDeviceStatusDTO {
   deviceSerial: string;
-  deviceStatus: boolean;
+  deviceStatus: "0" | "1";
 }
 
 export interface GetDeviceStatusDTO {

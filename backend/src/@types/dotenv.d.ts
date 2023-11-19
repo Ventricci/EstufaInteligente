@@ -9,5 +9,6 @@ declare namespace NodeJS {
     JWT_SECRET: string;
     MQTT_TOPIC_TEMPERATURE: string;
     MQTT_TOPIC_HUMIDITY: string;
+    MQTT_TOPIC_GREENHOUSE_STATUS: string;
   }
 }
