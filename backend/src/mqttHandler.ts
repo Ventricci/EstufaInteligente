@@ -54,7 +54,11 @@ class MqttHandler {
 
     this.client.on("connect", () => {
       this.client?.subscribe(
-        [process.env.MQTT_TOPIC_TEMPERATURE, process.env.MQTT_TOPIC_HUMIDITY],
+        [
+          process.env.MQTT_TOPIC_TEMPERATURE,
+          process.env.MQTT_TOPIC_HUMIDITY,
+          process.env.MQTT_TOPIC_GREENHOUSE_STATUS,
+        ],
         (error) => {
           if (error) {
             console.log(
@@ -99,7 +103,7 @@ class MqttHandler {
               );
             } else if (result.error) {
               console.log(
-                "[x] Não foi possível atualizar o status do dispositivo.\n"
+                `[x] Não foi possível atualizar o status do dispositivo. Erro: ${result.error}\n`
               );
             } else {
               console.log(
