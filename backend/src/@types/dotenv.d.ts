@@ -10,5 +10,6 @@ declare namespace NodeJS {
     MQTT_TOPIC_TEMPERATURE: string;
     MQTT_TOPIC_HUMIDITY: string;
     MQTT_TOPIC_GREENHOUSE_STATUS: string;
+    MQTT_TOPIC_ACTUATION: string;
   }
 }
