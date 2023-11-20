@@ -11,6 +11,9 @@ import "./card.css";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
 import states from "../../models/states/states";
+import axios from "axios";
+
+const baseURL = "https://tame-tuna-apron.cyclic.app/users/signup";
 
 const ColorButton = styled(Button)<ButtonProps>(({}) => ({
   color: "#ffffff",
@@ -55,6 +58,60 @@ function CardRegister() {
     event.preventDefault();
   };
 
+  // interface criada para facilitar o manuseio dos dados do usuario
+  // na hora de realizar o POST de signup
+  interface User {
+    name: string;
+    cpf: string;
+    email: string;
+    pass: string;
+    cep: string;
+    street: string;
+    houseNumber: number;
+    district: string;
+    city: string;
+    state: string;
+    adjunct: string;
+  }
+
+  // estado usado para armazenar as informacoes do usuario e requisitar o signup no post
+  const [data, setData] = React.useState<Partial<User>>({});
+  const [confirmPass, setConfirmPass] = React.useState("");
+
+  const handleSubmit = () => {
+    // condicao que obriga o usuario a preencher todos os campos
+    if (Object.values(data).length !== 11) {
+      window.alert("Preencha todos os campos.");
+    } else if (data.pass !== confirmPass) {
+      window.alert("Por favor, confirme sua senha.");
+    } else {
+      // requisicao post para fazer o registro do usuario
+      axios
+        .post(baseURL, {
+          name: data.name,
+          cpf: data.cpf,
+          email: data.email,
+          pass: data.pass,
+          cep: data.cep,
+          street: data.street,
+          houseNumber: data.houseNumber,
+          district: data.district,
+          city: data.city,
+          state: data.state,
+          adjunct: data.adjunct,
+        })
+        .then(function (response) {
+          // caso tudo de certo, eh retornado um window.alert com a resposta
+          window.alert(response);
+          console.log(response);
+        })
+        .catch(function (error) {
+          window.alert(error);
+          console.log(error);
+        });
+    }
+  };
+
   return (
     <div className="w-[720px] h-[720px] bg-white flex flex-col rounded-[20px] shadow-xl">
       <div className="pl-8 flex flex-row items-center justify-center">
@@ -69,11 +126,16 @@ function CardRegister() {
           Entre com seus dados para utilizar a plataforma.
         </p>
         <div className="mt-4 flex flex-row gap-4">
+          {/* todos os CssTextFields abaixo possuem um onChange com o codigo setData({ ...data, "ATRIBUTO": res.target.value })
+          o "...data" representa todas as informacoes anteriores enquanto que o "ATRIBUTO" representa a informacao atual, presente
+          no onChange
+          */}
           <CssTextField
             fullWidth
             id="outlined-search"
             label="Nome"
             type="search"
+            onChange={(res) => setData({ ...data, name: res.target.value })}
             InputLabelProps={{
               style: {
                 color: "#8CC63E",
@@ -85,6 +147,7 @@ function CardRegister() {
             id="outlined-search"
             label="CPF"
             type="search"
+            onChange={(res) => setData({ ...data, cpf: res.target.value })}
             InputLabelProps={{
               style: {
                 color: "#8CC63E",
@@ -98,6 +161,7 @@ function CardRegister() {
             id="outlined-search"
             label="Email"
             type="search"
+            onChange={(res) => setData({ ...data, email: res.target.value })}
             InputLabelProps={{
               style: {
                 color: "#8CC63E",
@@ -111,6 +175,7 @@ function CardRegister() {
             fullWidth
             id="outlined-start-adornment"
             type={showPassword ? "text" : "password"}
+            onChange={(res) => setData({ ...data, pass: res.target.value })}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -136,6 +201,7 @@ function CardRegister() {
             fullWidth
             id="outlined-start-adornment"
             type={showPassword ? "text" : "password"}
+            onChange={(res) => setConfirmPass(res.target.value)}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -163,6 +229,7 @@ function CardRegister() {
             id="outlined-search"
             label="CEP"
             type="search"
+            onChange={(res) => setData({ ...data, cep: res.target.value })}
             InputLabelProps={{
               style: {
                 color: "#8CC63E",
@@ -174,6 +241,7 @@ function CardRegister() {
             id="outlined-search"
             label="Complemento"
             type="search"
+            onChange={(res) => setData({ ...data, adjunct: res.target.value })}
             InputLabelProps={{
               style: {
                 color: "#8CC63E",
@@ -187,6 +255,7 @@ function CardRegister() {
             id="outlined-search"
             label="Endereço"
             type="search"
+            onChange={(res) => setData({ ...data, street: res.target.value })}
             InputLabelProps={{
               style: {
                 color: "#8CC63E",
@@ -197,6 +266,7 @@ function CardRegister() {
             fullWidth
             id="outlined-search"
             label="Bairro"
+            onChange={(res) => setData({ ...data, district: res.target.value })}
             type="search"
             InputLabelProps={{
               style: {
@@ -209,6 +279,9 @@ function CardRegister() {
             id="outlined-search"
             label="Número"
             type="search"
+            onChange={(res) =>
+              setData({ ...data, houseNumber: Number(res.target.value) })
+            }
             InputLabelProps={{
               style: {
                 color: "#8CC63E",
@@ -221,6 +294,7 @@ function CardRegister() {
             fullWidth
             id="outlined-search"
             label="Cidade"
+            onChange={(res) => setData({ ...data, city: res.target.value })}
             type="search"
             InputLabelProps={{
               style: {
@@ -233,6 +307,7 @@ function CardRegister() {
             id="outlined-select-currency"
             select
             label="Estado"
+            onChange={(res) => setData({ ...data, state: res.target.value })}
             InputLabelProps={{
               style: {
                 color: "#8CC63E",
@@ -253,7 +328,8 @@ function CardRegister() {
           >
             Já possui uma conta?
           </a>
-          <ColorButton variant="contained" onClick={() => navigate("/signin")}>
+          {/* chama a funcao handleSubmit apos o evento onClick, que faz as requisicoes de post */}
+          <ColorButton variant="contained" onClick={handleSubmit}>
             Registrar
           </ColorButton>
         </div>
