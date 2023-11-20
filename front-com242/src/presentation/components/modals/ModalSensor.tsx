@@ -8,7 +8,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 800,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -17,9 +17,10 @@ const style = {
 
 interface PropTypes {
   button: React.ReactElement;
+  deviceId: number;
 }
 
-const AppModalSensor: React.FC<PropTypes> = ({ button }) => {
+const AppModalSensor: React.FC<PropTypes> = ({ button, deviceId }) => {
   const [open, setOpen] = React.useState(false);
   const handleClose = () => {
     if (active === true) {
@@ -33,8 +34,6 @@ const AppModalSensor: React.FC<PropTypes> = ({ button }) => {
   function handleActive() {
     setActive(true);
   }
-
-  console.log("Flag", active);
 
   return (
     <div>
@@ -54,7 +53,9 @@ const AppModalSensor: React.FC<PropTypes> = ({ button }) => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <TableRead />
+          <div className="items-center justify-center flex">
+            <TableRead deviceId={deviceId} />
+          </div>
         </Box>
       </Modal>
     </div>

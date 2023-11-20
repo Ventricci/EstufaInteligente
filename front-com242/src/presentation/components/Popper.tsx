@@ -5,6 +5,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 export default function SimplePopper() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const data = JSON.parse(localStorage.getItem("apiData")!);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
@@ -15,7 +16,7 @@ export default function SimplePopper() {
 
   return (
     <div className="flex flex-row">
-      <p className="text-[20px] mr-4">Beltrano da Silva</p>
+      <p className="text-[20px] mr-4">{data.name}</p>
       <button aria-describedby={id} type="button" onClick={handleClick}>
         <ArrowDropDownIcon />
       </button>

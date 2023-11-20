@@ -2,11 +2,13 @@ import Card from "../../components/Card";
 import Photo from "../../../assets/login.png";
 
 function SignIn() {
+  localStorage.clear();
+
   return (
     <>
       <div className="flex w-screen h-screen bg-[#A8C686]">
         <div className="flex items-center m-auto w-[80%] h-[80%] bg-[#F0F8EA] border-[20px] border-[#FFFFFF] rounded-[15px]">
-          <div className='w-[65%] flex justify-center items-center'>
+          <div className="w-[65%] flex justify-center items-center">
             <Card />
           </div>
           <div className="flex flex-col bg-[#A3CEF1] justify-evenly items-center h-full w-[35%]">
