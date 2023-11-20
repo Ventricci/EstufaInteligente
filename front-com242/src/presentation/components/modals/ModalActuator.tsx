@@ -2,6 +2,9 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
+import axios from "axios";
+
+const baseURL = "https://tame-tuna-apron.cyclic.app/actuation";
 
 const style = {
   position: "absolute" as "absolute",
@@ -17,9 +20,11 @@ const style = {
 
 interface PropTypes {
   button: React.ReactElement;
+  onClick?: void;
+  id: number;
 }
 
-const AppModal: React.FC<PropTypes> = ({ button }) => {
+const AppModal: React.FC<PropTypes> = ({ button, id }) => {
   const [open, setOpen] = React.useState(false);
   const handleClose = () => {
     if (active === true) {
@@ -28,26 +33,54 @@ const AppModal: React.FC<PropTypes> = ({ button }) => {
     }
   };
 
+  // estado que obriga o modal a esperar 10000ms antes de renderizar a resposta
+  // isso da tempo para a requisicao bater no back e retornar para o front
   const [active, setActive] = React.useState(false);
 
+  // estado associado a variavel deviceStatus da resposta da requisicao (usado para
+  // atualizar os valores no useEffect)
+  const [deviceStatus, setDeviceStatus] = React.useState(false);
+
+  // estado associado a variavel successMessage da resposta da requisicao (usado para
+  // mudar a mensagem no modal, de acordo com a resposta da requisicao)
+  const [message, setMessage] = React.useState("Falha no Dispositivo");
+
   function handleActive() {
-    setActive(true);
+    // ao clicar no botao e chamar a funcao, abre-se o modal
+    setOpen(true);
+
+    // seta 30000ms para que, apos esse tempo, a flag permita a resposta ser renderizada no modal
+    setTimeout(() => setActive(true), 20000);
+
+    axios
+      // requisicao post que passa a baseURL da requisicao, alem do id (recebido como prop)
+      .post(`${baseURL}/${id}`, {})
+      .then((response) => {
+        // com a resposta da requisicao, seta-se os valores para os estados
+        setDeviceStatus(response.data.deviceStatus);
+        setMessage(response.data.successMessage);
+
+        console.log(
+          "CHANGE STATUS",
+          response,
+          "DEVICESTATUS",
+          localStorage.getItem("deviceStatus")
+        );
+        localStorage.setItem("active", "true");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
+  // useEffect usado para atualizar os valores active e deviceStatus, dentro do localStorage
   React.useEffect(() => {
-    localStorage.setItem("active", JSON.stringify(active));
-  }),
-    [active];
+    localStorage.setItem("deviceStatus", deviceStatus.toString());
+  }, [active, deviceStatus]);
 
   return (
     <div>
-      <a
-        onClick={() => {
-          setOpen(true);
-          setTimeout(handleActive, 5000);
-        }}
-        className="cursor-pointer"
-      >
+      <a onClick={handleActive} className="cursor-pointer">
         {button}
       </a>
       <Modal
@@ -57,22 +90,31 @@ const AppModal: React.FC<PropTypes> = ({ button }) => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
+          {/* Caso o active retorne true, renderiza-se o primeiro Typography.
+          caso contrário, o segundo.
+          */}
           {active ? (
+            // Logica usada para renderizar diferentes menssagens, de acordo com
+            // as diferentes respostas da requisicao
             <>
               <Typography id="modal-modal-title" variant="h6" component="h2">
-                Sucesso!
+                {message === "O dispositivo permaneceu no mesmo status." ||
+                message === "Falha no Dispositivo"
+                  ? "Atenção!"
+                  : "Sucesso!"}
               </Typography>
               <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                O dispositivo foi acionado.
+                {message}
               </Typography>
             </>
           ) : (
+            // mensagem exibida assim que o modal eh aberto
             <>
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Aguarde!
               </Typography>
               <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                O dispositivo está sendo acionado.
+                A requisição está sendo enviada ao dispositivo
               </Typography>
             </>
           )}
