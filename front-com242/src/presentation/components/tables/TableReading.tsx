@@ -4,14 +4,34 @@ import {
   TablePagination,
   tablePaginationClasses as classes,
 } from "@mui/base/TablePagination";
+import DatePickerApp from "../DatePicker";
+import axios from "axios";
+import { format } from "date-fns";
 
-export default function TableRead() {
+const baseURL = "https://nice-plum-giraffe-gear.cyclic.app/readings/latest";
+
+interface PropsTypes {
+  deviceId: number;
+}
+const TableRead: React.FC<PropsTypes> = ({ deviceId }) => {
+  // definicao padrao da biblioteca para renderizar a table
   const [page, setPage] = React.useState(0);
+
+  // definicao padrao da biblioteca para renderizar a table
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+  // estado para pegar a data inicial
+  const [initial, setInitial] = React.useState<Date>();
+
+  // estado que define uma flag, essencial para esperar os valores
+  // vindos do backend
+  const [render, setRender] = React.useState(false);
+
+  // estado que recebe todos os dados de leitura da requisicao do backend
+  const [readingRows, setReadingsRows] = React.useState<any[]>([]);
+
+  // estado para alterar entre medida Temperatura e medida Umidade
+  const [measure, setMeasure] = React.useState(false);
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
@@ -27,83 +47,166 @@ export default function TableRead() {
     setPage(0);
   };
 
+  // funcao que chama a requisicao para pegar as ultimas leituras de temperatura
+  function handleTableDataTemperature() {
+    // setando measure para true
+    setMeasure(true);
+
+    // requisicao get para pegar as ultimas leituras de temperatura desde uma data inicial
+    axios
+      .get(
+        `${baseURL}/${deviceId}/temperature/${format(
+          initial as Date,
+          "yyyy-MM-dd'T'HH:mm:ss"
+        )}`
+      )
+      .then((response) => {
+        console.log(response.data);
+
+        // populando a variavel readingRows com a resposta da requisicao
+        setReadingsRows(response.data);
+
+        // console.log() para mostrar as leituras
+        console.log("readings", readingRows[0]);
+
+        // setando um setTimeout que, ao acabar o tempo, renderizará a tabela
+        setTimeout(() => {
+          setRender(true);
+          console.log(readingRows);
+        }, 3000);
+      });
+  }
+
+  // funcao que chama a requisicao para pegar as ultimas leituras de umidade
+  function handleTableDataHumidity() {
+    // setando measure para false
+    setMeasure(false);
+
+    // requisicao get para pegar as ultimas leituras de umidade desde uma data inicial
+    axios
+      .get(
+        `${baseURL}/${deviceId}/humidity/${format(
+          initial as Date,
+          "yyyy-MM-dd'T'HH:mm:ss"
+        )}`
+      )
+      .then((response) => {
+        console.log(response.data);
+
+        // populando a variavel readingRows com a resposta da requisicao
+        setReadingsRows(response.data);
+
+        // console.log() para mostrar as leituras
+        console.log("readings", readingRows[0]);
+
+        // setando um setTimeout que, ao acabar o tempo, renderizará a tabela
+        setTimeout(() => {
+          setRender(true);
+          console.log(readingRows);
+        }, 3000);
+      });
+  }
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - readingRows.length) : 0;
+
+  // useEffect para atualizar as leituras no array readingRows, sempre que o render (flag para renderizar a tabela)
+  // for true
+  React.useEffect(() => {
+    readingRows;
+  }, [render]);
+
   return (
     <Root sx={{ maxWidth: "100%", width: 500 }}>
-      <div className="flex w-full text-[23px] font-bold font-sans justify-center items-center">
-        <h2>Leituras</h2>
-      </div>
+      <div className="flex items-center justify-center flex-col">
+        <div className="flex w-full text-[23px] font-bold font-sans justify-center items-center flex-col">
+          <h2>Leituras</h2>
 
-      <table aria-label="custom pagination table">
-        <thead>
-          <tr>
-            <th>Data Última Leitura</th>
-            <th>Temperatura</th>
-          </tr>
-        </thead>
-        <tbody>
-          {(rowsPerPage > 0
-            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : rows
-          ).map((row) => (
-            <tr key={row.name}>
-              <td>{row.name}</td>
-              <td style={{ width: 160 }} align="right">
-                {row.fat}
-              </td>
-            </tr>
-          ))}
-          {emptyRows > 0 && (
-            <tr style={{ height: 41 * emptyRows }}>
-              <td colSpan={3} aria-hidden />
-            </tr>
-          )}
-        </tbody>
-        <tfoot>
-          <tr>
-            <CustomTablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-              colSpan={3}
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              slotProps={{
-                select: {
-                  "aria-label": "rows per page",
-                },
-                actions: {
-                  showFirstButton: true,
-                  showLastButton: true,
-                },
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </tr>
-        </tfoot>
-      </table>
+          <DatePickerApp
+            selected={initial!}
+            onChange={(newValue) => {
+              setInitial(newValue);
+            }}
+            label={"Data inicial"}
+            width={"150px"}
+          />
+          <div className="flex flex-row gap-4 m-2">
+            <a
+              className="bg-gray-200 rounded-lg p-2 cursor-pointer"
+              onClick={handleTableDataTemperature}
+            >
+              temperatura
+            </a>
+            <a
+              className="bg-gray-200 rounded-lg p-2 cursor-pointer"
+              onClick={handleTableDataHumidity}
+            >
+              umidade
+            </a>
+          </div>
+        </div>
+
+        {render ? (
+          <table aria-label="custom pagination table">
+            <thead>
+              <tr>
+                <th>Data Última Leitura</th>
+                <th>{measure === true ? "Temperatura" : "Umidade"}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(rowsPerPage > 0
+                ? readingRows.slice(
+                    page * rowsPerPage,
+                    page * rowsPerPage + rowsPerPage
+                  )
+                : readingRows
+              ).map((row) => {
+                return (
+                  <tr key={row.datetime}>
+                    <td>{row.datetime}</td>
+                    <td style={{ width: 160 }} align="right">
+                      {row.value}
+                    </td>
+                  </tr>
+                );
+              })}
+              {emptyRows > 0 && (
+                <tr style={{ height: 41 * emptyRows }}>
+                  <td colSpan={3} aria-hidden />
+                </tr>
+              )}
+            </tbody>
+            <tfoot>
+              <tr>
+                <CustomTablePagination
+                  rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+                  colSpan={3}
+                  count={readingRows.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  slotProps={{
+                    select: {
+                      "aria-label": "rows per page",
+                    },
+                    actions: {
+                      showFirstButton: true,
+                      showLastButton: true,
+                    },
+                  }}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </tr>
+            </tfoot>
+          </table>
+        ) : null}
+      </div>
     </Root>
   );
-}
+};
 
-function createData(name: string, fat: number) {
-  return { name, fat };
-}
-
-const rows = [
-  createData("01/09/2001", 37),
-  createData("01/09/2001", 25.0),
-  createData("01/09/2001", 16.0),
-  createData("01/09/2001", 40),
-  createData("01/09/2001", 16.0),
-  createData("01/09/2001", 32),
-  createData("01/09/2001", 22),
-  createData("01/09/2001", 15),
-  createData("01/09/2001", 18),
-  createData("01/09/2001", 26),
-  createData("01/09/2001", 35),
-  createData("01/09/2001", 19.0),
-  createData("01/09/2001", 18.0),
-];
+export default TableRead;
 
 const grey = {
   50: "#F3F6F9",
