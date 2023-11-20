@@ -5,6 +5,7 @@ import { SendActuationDTO } from "../../dtos/SendActuationDTO";
 interface IResponse {
   errorMessage?: string;
   successMessage?: string;
+  isChanged?: boolean;
 }
 
 export class SendActuationUseCase {
@@ -25,9 +26,11 @@ export class SendActuationUseCase {
     // Obter o serial do dispositivo
     const deviceSerial = deviceExists.serial;
 
-    // Enviar uma mensagem de acionamento para o tópico ACIONAMENTO/<serial>
+    const oldStatus = deviceExists.status;
     const action = deviceExists.status === true ? "0" : "1";
     const topic = `${process.env.MQTT_TOPIC_ACTUATION}/${deviceSerial}`;
+
+    console.log(`[TESTE] Enviando mensagem para o tópico ${topic}: ${action}`);
 
     const result = mqttClient.sendMessage(topic, action);
 
@@ -36,11 +39,37 @@ export class SendActuationUseCase {
         errorMessage: "Ocorreu um erro ao enviar a mensagem",
       };
     } else {
-      return {
-        successMessage: `O dispositivo está sendo ${
-          deviceExists.status === true ? "desligado" : "ligado"
-        }.`,
-      };
+      // Depois de enviar a mensagem, esperar 10 segundos, verificar o status do dispositivo e retornar uma mensagem de sucesso com o status atualizado
+      return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+          const device = await prisma.devices.findUnique({
+            where: {
+              id: deviceId,
+            },
+          });
+
+          if (!device) {
+            reject({
+              errorMessage:
+                "Ocorreu um erro ao verificar o status do dispositivo",
+            });
+          } else {
+            const newStatus = device.status;
+
+            if (newStatus === oldStatus) {
+              resolve({
+                successMessage: "O dispositivo permaneceu no mesmo status.",
+                isChanged: false,
+              });
+            } else {
+              resolve({
+                successMessage: `O dispositivo mudou de status. Status atual: ${newStatus}`,
+                isChanged: true,
+              });
+            }
+          }
+        }, 1000 * 5);
+      });
     }
   }
 }
