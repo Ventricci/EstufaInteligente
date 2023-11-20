@@ -1,13 +1,14 @@
+import React, { useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import AppModal from "../modals/ModalActuator";
+import { TableContainer } from "@mui/material";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -29,7 +30,37 @@ const StyledTableRow = styled(TableRow)(({}) => ({
   },
 }));
 
-export default function TableActuator() {
+interface PropTypes {}
+
+const TableActuator: React.FC<PropTypes> = ({}) => {
+  const [data, setData] = React.useState([
+    {
+      data: [
+        {
+          id: 0,
+          name: "default",
+          category: "activation",
+          status: true,
+          deleted: false,
+          serial: "default",
+          greenhousesid: 0,
+        },
+      ],
+      greenhouseId: 0,
+    },
+  ]);
+
+  useEffect(() => {
+    setInterval(() => {
+      localStorage.getItem("devicesData") === null
+        ? null
+        : setData(JSON.parse(localStorage.getItem("devicesData")!));
+    }, 5000);
+  }, [localStorage.getItem("greenhouseId")]);
+
+  console.log(localStorage.getItem("active"));
+  console.log(localStorage.getItem("deviceStatus"));
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -40,54 +71,46 @@ export default function TableActuator() {
             <StyledTableCell align="right">Ações</StyledTableCell>
           </TableRow>
         </TableHead>
-        <TableBody>
-          <StyledTableRow key={"name"}>
-            <StyledTableCell component="th" scope="row">
-              Irrigador
-            </StyledTableCell>
-            <StyledTableCell align="right">Ativo</StyledTableCell>
-            <StyledTableCell align="right">
-              <AppModal button={<PlayArrowIcon />} />{" "}
-            </StyledTableCell>
-          </StyledTableRow>
-          <StyledTableRow key={"name"}>
-            <StyledTableCell component="th" scope="row">
-              Irrigador
-            </StyledTableCell>
-            <StyledTableCell align="right">Ativo</StyledTableCell>
-            <StyledTableCell align="right">
-              <AppModal button={<PlayArrowIcon />} />
-            </StyledTableCell>
-          </StyledTableRow>
-          <StyledTableRow key={"name"}>
-            <StyledTableCell component="th" scope="row">
-              Bomba de gotejamento
-            </StyledTableCell>
-            <StyledTableCell align="right">Inativo</StyledTableCell>
-            <StyledTableCell align="right">
-              <AppModal button={<PlayArrowIcon />} />{" "}
-            </StyledTableCell>
-          </StyledTableRow>
-          <StyledTableRow key={"name"}>
-            <StyledTableCell component="th" scope="row">
-              Bomba de gotejamento
-            </StyledTableCell>
-            <StyledTableCell align="right">Inativo</StyledTableCell>
-            <StyledTableCell align="right">
-              <AppModal button={<PlayArrowIcon />} />{" "}
-            </StyledTableCell>
-          </StyledTableRow>
-          <StyledTableRow key={"name"}>
-            <StyledTableCell component="th" scope="row">
-              Bomba de gotejamento
-            </StyledTableCell>
-            <StyledTableCell align="right">Inativo</StyledTableCell>
-            <StyledTableCell align="right">
-              <AppModal button={<PlayArrowIcon />} />{" "}
-            </StyledTableCell>
-          </StyledTableRow>
-        </TableBody>
+        {data.map((data) => {
+          if (
+            data.greenhouseId === Number(localStorage.getItem("greenhouseId"))
+          ) {
+            return (
+              <TableBody>
+                {data.data.map((data) => {
+                  return data.category === "activation" ? (
+                    <StyledTableRow key={data.id}>
+                      <StyledTableCell component="th" scope="row">
+                        {data.name}
+                      </StyledTableCell>
+                      {localStorage.getItem("active") === "true" ? (
+                        <StyledTableCell align="right">
+                          {localStorage.getItem("deviceStatus") === "true"
+                            ? "Ligado"
+                            : "Desligado"}
+                        </StyledTableCell>
+                      ) : (
+                        <StyledTableCell align="right">
+                          {data.status === true ? "Ligado" : "Desligado"}
+                        </StyledTableCell>
+                      )}
+                      <StyledTableCell align="right">
+                        <AppModal
+                          button={<PlayArrowIcon />}
+                          onClick={undefined}
+                          id={data.id}
+                        />
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ) : null;
+                })}
+              </TableBody>
+            );
+          }
+        })}
       </Table>
     </TableContainer>
   );
-}
+};
+
+export default TableActuator;
