@@ -51,8 +51,8 @@ model Devices_Coordinates {
 model Greenhouses {
   id                      Int                       @id @default(autoincrement())
   name                    String                    @db.VarChar(120)
-  idealtemperature        Decimal?                  @db.Decimal(3, 2)
-  idealhumidty            Decimal?                  @db.Decimal(3, 2)
+  idealtemperature        Decimal?                  @db.Decimal(5, 2)
+  idealhumidty            Decimal?                  @db.Decimal(5, 2)
   usersid                 Int
   addressesid             Int
   deleted                 Boolean
