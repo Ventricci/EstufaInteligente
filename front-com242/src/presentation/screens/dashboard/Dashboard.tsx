@@ -15,10 +15,10 @@ function DashboardScreen() {
             <App />
             <div className="flex flex-row gap-10">
               <Actuator />
-              <Sensor/>
+              <Sensor />
             </div>
           </div>
-        </div> 
+        </div>
       </div>
     </>
   );
