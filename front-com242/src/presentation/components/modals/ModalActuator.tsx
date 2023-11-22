@@ -93,7 +93,7 @@ const AppModal: React.FC<PropTypes> = ({ button, id }) => {
           {/* Caso o active retorne true, renderiza-se o primeiro Typography.
           caso contrário, o segundo.
           */}
-          {!active ? (
+          {active ? (
             // Logica usada para renderizar diferentes menssagens, de acordo com
             // as diferentes respostas da requisicao
             <>
