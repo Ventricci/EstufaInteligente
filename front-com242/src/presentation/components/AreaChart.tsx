@@ -39,7 +39,7 @@ export default function App() {
     {},
   ]);
 
-  function handleGenerateArea() {
+  async function handleGenerateArea() {
     // limpa os valores da variavel idealTemperatureArray
     setIdealTemperatureArray([{}]);
 
@@ -50,7 +50,7 @@ export default function App() {
     });
 
     // realiza uma requisicao get para pegar os dados estaticos
-    axios
+    await axios
       .get(
         `${baseUrlStatic}/${deviceId}/${greatness}/${format(
           initialDate as Date,

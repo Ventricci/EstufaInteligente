@@ -7,10 +7,6 @@ export interface IResponse {
 
 export class UpdateDeviceStatusController {
   async handle(topic: string, message: string): Promise<IResponse> {
-    console.log(`[TESTE] UpdateDeviceStatusController.handle()`);
-    console.log(`[TESTE] Tópico: ${topic}`);
-    console.log(`[TESTE] Mensagem: ${message}`);
-
     if (message !== "0" && message !== "1") {
       return {
         error: "O status informado é inválido",

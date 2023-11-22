@@ -41,8 +41,10 @@ class MqttHandler {
     });
 
     this.client.on("error", (error) => {
+      console.log("--------------------------------------------------");
       console.log(`[x] Não foi possível conectar ao broker: ${error}`);
       console.log("[...] Tentando reconectar em 10 segundos");
+      console.log("--------------------------------------------------");
       setTimeout(() => {
         this.connect();
       }, 1000 * 10);
@@ -57,7 +59,7 @@ class MqttHandler {
         [
           process.env.MQTT_TOPIC_TEMPERATURE,
           process.env.MQTT_TOPIC_HUMIDITY,
-          // process.env.MQTT_TOPIC_GREENHOUSE_STATUS,
+          process.env.MQTT_TOPIC_GREENHOUSE_STATUS,
         ],
         (error) => {
           if (error) {
@@ -69,12 +71,14 @@ class MqttHandler {
               `[✓] Inscrito nos seguintes tópicos:\n- ${process.env.MQTT_TOPIC_TEMPERATURE}\n- ${process.env.MQTT_TOPIC_HUMIDITY}\n- ${process.env.MQTT_TOPIC_GREENHOUSE_STATUS}\n`
             );
           }
+          console.log("--------------------------------------------------");
         }
       );
     });
 
     this.client.on("message", (topic, message) => {
-      console.log(`[✓] Recebido mensagem do tópico ${topic}: "${message}"\n`);
+      console.log("--------------------------------------------------");
+      console.log(`[✓] Recebido mensagem do tópico ${topic}: "${message}"`);
 
       if (
         topic === process.env.MQTT_TOPIC_TEMPERATURE ||
@@ -88,8 +92,10 @@ class MqttHandler {
               console.log(
                 `[x] Não foi possível armazenar os dados: ${result}\n`
               );
+              console.log("--------------------------------------------------");
             } else {
-              console.log("[✓] Dados armazenados com sucesso!\n");
+              console.log("[✓] Dados armazenados com sucesso!");
+              console.log("--------------------------------------------------");
             }
           });
       } else if (topic === process.env.MQTT_TOPIC_GREENHOUSE_STATUS) {
@@ -101,14 +107,17 @@ class MqttHandler {
               console.log(
                 "[✓] Status do dispositivo atualizado com sucesso!\n"
               );
+              console.log("--------------------------------------------------");
             } else if (result.error) {
               console.log(
                 `[x] Não foi possível atualizar o status do dispositivo. Erro: ${result.error}\n`
               );
+              console.log("--------------------------------------------------");
             } else {
               console.log(
                 "[x] Erro não identificado ao atualizar o status do dispositivo.\n"
               );
+              console.log("--------------------------------------------------");
             }
           });
       }
@@ -129,6 +138,7 @@ class MqttHandler {
 
   public async sendMessage(topic: string, message: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
+      console.log("--------------------------------------------------");
       if (this.client && this.client.connected) {
         this.client.publish(topic, message, { qos: 2 }, (error) => {
           if (error) {
@@ -145,11 +155,13 @@ class MqttHandler {
         );
         reject(false); // Rejeitando a promessa com "false" em caso de erro
       }
+      console.log("--------------------------------------------------");
     });
   }
 
   public subscribe(topic: string): void {
     this.client?.subscribe(topic, (error) => {
+      console.log("--------------------------------------------------");
       if (error) {
         console.log(
           `[x] Não foi possível se inscrever em ${topic}: ${error}\n`
@@ -157,6 +169,7 @@ class MqttHandler {
       } else {
         console.log(`[✓] Inscrito no tópico ${topic}\n`);
       }
+      console.log("--------------------------------------------------");
     });
   }
 }

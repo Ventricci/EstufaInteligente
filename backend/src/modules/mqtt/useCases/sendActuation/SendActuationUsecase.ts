@@ -5,7 +5,7 @@ import { SendActuationDTO } from "../../dtos/SendActuationDTO";
 interface IResponse {
   errorMessage?: string;
   successMessage?: string;
-  isChanged?: boolean;
+  deviceStatus?: boolean;
 }
 
 export class SendActuationUseCase {
@@ -59,12 +59,12 @@ export class SendActuationUseCase {
             if (newStatus === oldStatus) {
               resolve({
                 successMessage: "O dispositivo permaneceu no mesmo status.",
-                isChanged: false,
+                deviceStatus: newStatus,
               });
             } else {
               resolve({
                 successMessage: `O dispositivo mudou de status. Status atual: ${newStatus}`,
-                isChanged: true,
+                deviceStatus: newStatus,
               });
             }
           }
