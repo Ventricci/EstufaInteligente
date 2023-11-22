@@ -14,8 +14,8 @@ import DatePickerApp from "./DatePicker";
 import { format } from "date-fns";
 import { SelectChangeEvent } from "@mui/material/Select";
 
-const baseUrlIdeal = "https://tame-tuna-apron.cyclic.app/greenhouses/";
-const baseUrlStatic = "https://tame-tuna-apron.cyclic.app/readings/interval";
+const baseUrlIdeal = "http://localhost:3000/greenhouses/";
+const baseUrlStatic = "http://localhost:3000/readings/interval";
 
 export default function App() {
   // retorna as estufas disponiveis a partir do localStorage setado em Card

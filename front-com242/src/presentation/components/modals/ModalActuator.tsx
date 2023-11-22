@@ -4,10 +4,10 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import axios from "axios";
 
-const baseURL = "https://tame-tuna-apron.cyclic.app/actuation";
+const baseURL = "http://localhost:3000/actuation";
 
 const style = {
-  position: "absolute" as "absolute",
+  position: "absolute" as const,
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
@@ -26,16 +26,16 @@ interface PropTypes {
 
 const AppModal: React.FC<PropTypes> = ({ button, id }) => {
   const [open, setOpen] = React.useState(false);
-  const handleClose = () => {
-    if (active === true) {
-      setOpen(false);
-      setActive(false);
-    }
-  };
+  // const handleClose = () => {
+  //   if (active === true) {
+  //     setOpen(false);
+  //     setActive(false);
+  //   }
+  // };
 
   // estado que obriga o modal a esperar 10000ms antes de renderizar a resposta
   // isso da tempo para a requisicao bater no back e retornar para o front
-  const [active, setActive] = React.useState(false);
+  const [isWaiting, setIsWaiting] = React.useState(false);
 
   // estado associado a variavel deviceStatus da resposta da requisicao (usado para
   // atualizar os valores no useEffect)
@@ -45,20 +45,21 @@ const AppModal: React.FC<PropTypes> = ({ button, id }) => {
   // mudar a mensagem no modal, de acordo com a resposta da requisicao)
   const [message, setMessage] = React.useState("Falha no Dispositivo");
 
-  function handleActive() {
+  async function handleActive() {
     // ao clicar no botao e chamar a funcao, abre-se o modal
     setOpen(true);
-
+    setIsWaiting(true); 
     // seta 30000ms para que, apos esse tempo, a flag permita a resposta ser renderizada no modal
-    setTimeout(() => setActive(true), 20000);
 
-    axios
+    await axios
       // requisicao post que passa a baseURL da requisicao, alem do id (recebido como prop)
       .post(`${baseURL}/${id}`, {})
       .then((response) => {
         // com a resposta da requisicao, seta-se os valores para os estados
         setDeviceStatus(response.data.deviceStatus);
         setMessage(response.data.successMessage);
+        setIsWaiting(false);
+        setTimeout(() => setOpen(false), 4000);
 
         console.log(
           "CHANGE STATUS",
@@ -76,7 +77,7 @@ const AppModal: React.FC<PropTypes> = ({ button, id }) => {
   // useEffect usado para atualizar os valores active e deviceStatus, dentro do localStorage
   React.useEffect(() => {
     localStorage.setItem("deviceStatus", deviceStatus.toString());
-  }, [active, deviceStatus]);
+  }, [deviceStatus]);
 
   return (
     <div>
@@ -85,7 +86,7 @@ const AppModal: React.FC<PropTypes> = ({ button, id }) => {
       </a>
       <Modal
         open={open}
-        onClose={handleClose}
+        onClose={() => setOpen(false)}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -93,7 +94,7 @@ const AppModal: React.FC<PropTypes> = ({ button, id }) => {
           {/* Caso o active retorne true, renderiza-se o primeiro Typography.
           caso contrário, o segundo.
           */}
-          {active ? (
+          {!isWaiting ? (
             // Logica usada para renderizar diferentes menssagens, de acordo com
             // as diferentes respostas da requisicao
             <>

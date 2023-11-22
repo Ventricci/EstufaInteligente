@@ -10,8 +10,8 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import "./card.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-const baseURL = "https://tame-tuna-apron.cyclic.app/users/signin";
-const baseUrlDevices = "https://tame-tuna-apron.cyclic.app/devices/list";
+const baseURL = "http://localhost:3000/users/signin";
+const baseUrlDevices = "http://localhost:3000/devices/list";
 const ColorButton = styled(Button)<ButtonProps>(({}) => ({
   color: "#ffffff",
   backgroundColor: "#A8C686",
@@ -83,7 +83,7 @@ function Card() {
 
           console.log(response.data.greenhouses);
 
-          let devicesData: any[] = [];
+          const devicesData: any[] = [];
 
           // funcao feita para armazenar os dados da estufa associadas ao usuario
           response.data.greenhouses.map((data: any) => {
