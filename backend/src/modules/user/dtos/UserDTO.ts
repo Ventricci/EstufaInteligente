@@ -19,3 +19,12 @@ export interface AuthenticateUserDTO {
   email: string;
   pass: string;
 }
+
+export interface UpdateUserDTO {
+  id: number;
+  name?: string;
+  cpf?: string;
+  email?: string;
+  pass?: string;
+  role?: Users_Role;
+}
