@@ -61,18 +61,13 @@ const TableRead: React.FC<PropsTypes> = ({ deviceId }) => {
         )}`
       )
       .then((response) => {
-        console.log(response.data);
 
         // populando a variavel readingRows com a resposta da requisicao
         setReadingsRows(response.data);
 
-        // console.log() para mostrar as leituras
-        console.log("readings", readingRows[0]);
-
         // setando um setTimeout que, ao acabar o tempo, renderizará a tabela
         setTimeout(() => {
           setRender(true);
-          console.log(readingRows);
         }, 3000);
       });
   }
@@ -91,18 +86,13 @@ const TableRead: React.FC<PropsTypes> = ({ deviceId }) => {
         )}`
       )
       .then((response) => {
-        console.log(response.data);
 
         // populando a variavel readingRows com a resposta da requisicao
         setReadingsRows(response.data);
 
-        // console.log() para mostrar as leituras
-        console.log("readings", readingRows[0]);
-
         // setando um setTimeout que, ao acabar o tempo, renderizará a tabela
         setTimeout(() => {
           setRender(true);
-          console.log(readingRows);
         }, 3000);
       });
   }

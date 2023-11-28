@@ -19,7 +19,7 @@ const baseUrlStatic = "http://localhost:3000/readings/interval";
 
 export default function App() {
   // retorna as estufas disponiveis a partir do localStorage setado em Card
-  const selectValues = JSON.parse(localStorage.getItem("apiData")!);
+  const selectValues = JSON.parse(localStorage.getItem("UserApiData")!);
   // seta um estado para o Id do dispositivo
   const [deviceId, setDeviceId] = React.useState<number>();
   // seta um estado para a grandeza
@@ -46,7 +46,6 @@ export default function App() {
     // realiza uma requisicao get para pegar a temperatura ideal
     axios.get(`${baseUrlIdeal}/${deviceId}`, {}).then((res) => {
       setIdealTemperature(res.data);
-      console.log(idealTemperature[0]);
     });
 
     // realiza uma requisicao get para pegar os dados estaticos
@@ -67,7 +66,6 @@ export default function App() {
         setIdealTemperatureArray(
           Array(dataStatic.length).fill(idealTemperature[0])
         );
-        console.log(dataStatic);
       })
       .catch((error) => {
         console.log(error);
