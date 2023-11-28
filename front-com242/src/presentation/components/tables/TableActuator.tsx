@@ -58,9 +58,6 @@ const TableActuator: React.FC<PropTypes> = ({}) => {
     }, 5000);
   }, [localStorage.getItem("greenhouseId")]);
 
-  console.log(localStorage.getItem("active"));
-  console.log(localStorage.getItem("deviceStatus"));
-
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
