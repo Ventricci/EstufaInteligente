@@ -77,11 +77,9 @@ function Card() {
           pass: data.pass,
         })
         .then(function (response) {
-          // apos obter a resposta da requisicao, salva os dados no localStorage, na variavel apiData
+          // apos obter a resposta da requisicao, salva os dados no localStorage, na variavel UserApiData
           // esses dados serao usados para renderizar as opcoes de estufa, alem do nome associado ao usuario logado
-          localStorage.setItem("apiData", JSON.stringify(response.data));
-
-          console.log(response.data.greenhouses);
+          localStorage.setItem("UserApiData", JSON.stringify(response.data));
 
           const devicesData: any[] = [];
 
@@ -94,17 +92,11 @@ function Card() {
 
               // chama-se a funcao stringify, pois o localStorage so armazena strings
               localStorage.setItem("devicesData", JSON.stringify(devicesData));
-
-              console.log(
-                "local",
-                JSON.parse(localStorage.getItem("devicesData")!)
-              );
             });
           });
 
           // caso o codigo chegue ate aqui, o usuario eh logado
           window.alert("Logado com sucesso!");
-          console.log(response);
 
           // e eh enviado para a dashboard
           if (response.data.auth) {

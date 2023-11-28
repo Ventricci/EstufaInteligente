@@ -103,7 +103,6 @@ function CardRegister() {
         .then(function (response) {
           // caso tudo de certo, eh retornado um window.alert com a resposta
           window.alert(response);
-          console.log(response);
         })
         .catch(function (error) {
           window.alert(error);

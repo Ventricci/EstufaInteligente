@@ -60,12 +60,6 @@ const AppModal: React.FC<PropTypes> = ({ button, id }) => {
         setDeviceStatus(response.data.deviceStatus);
         setMessage(response.data.successMessage);
         
-        console.log(
-          "CHANGE STATUS",
-          response,
-          "DEVICESTATUS",
-          localStorage.getItem("deviceStatus")
-        );
         localStorage.setItem("active", "true");
       })
       .catch((error) => {
