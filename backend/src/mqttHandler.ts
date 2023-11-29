@@ -18,8 +18,8 @@ class MqttHandler {
   private username: string;
   private password: string;
   private protocol: mqtt.MqttProtocol;
-  private storeReadingsController: any; // TODO: verifique se é possível tipar esse controller
-  private updateDeviceStatusController: any; // TODO: verifique se é possível tipar esse controller
+  private storeReadingsController: StoreReadingsController;
+  private updateDeviceStatusController: UpdateDeviceStatusController;
 
   constructor() {
     this.client = null;
@@ -141,17 +141,17 @@ class MqttHandler {
         this.client.publish(topic, message, { qos: 2 }, (error) => {
           if (error) {
             console.log(`[x] Não foi possível enviar a mensagem: ${error}\n`);
-            reject(false); // Rejeitando a promessa com "false" em caso de erro
+            reject(false);
           } else {
             console.log("[✓] Mensagem enviada com sucesso!\n");
-            resolve(true); // Resolvendo a promessa com "true" em caso de sucesso
+            resolve(true);
           }
         });
       } else {
         console.log(
           "[x] Não foi possível enviar a mensagem: Client não conectado.\n"
         );
-        reject(false); // Rejeitando a promessa com "false" em caso de erro
+        reject(false);
       }
       console.log("--------------------------------------------------");
     });

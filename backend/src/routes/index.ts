@@ -8,8 +8,6 @@ import { greenhousesRoutes } from "./greenhouses.routes";
 
 const routes = Router();
 
-// TODO: Colocar validação de token nas rotas privadas
-
 routes.use("/users", userRoutes);
 routes.use("/actuation", actuationRoutes);
 routes.use("/readings", readingsRoutes);

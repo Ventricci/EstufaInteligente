@@ -4,7 +4,6 @@ import { AppError } from "../../../../errors/AppError";
 
 export class GetGreenhouseUseCase {
   async execute(greenhouseId: number): Promise<Greenhouses[]> {
-    // verificando se a estufa existe
     const greenhouses = await prisma.greenhouses.findMany({
       where: {
         id: greenhouseId,

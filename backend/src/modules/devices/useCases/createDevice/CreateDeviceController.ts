@@ -8,27 +8,21 @@ export class CreateDeviceController {
   async handle(request: Request, response: Response) {
     const { name, category, status, serial, greenhousesid } =
       request.body as CreateDeviceDTO;
-    // validando se os campos estão corretos
-    // name:
     if (!name || name.length > 80)
       throw new AppError(
         "O banco de dados não aceita nomes com mais de 80 caracteres"
       );
-    // category:
     if (
       !category ||
       (category !== Devices_Type.sensor && category !== Devices_Type.activation)
     )
       throw new AppError("A categoria só pode ser 'sensor' ou 'activation'");
-    // status:
     if (status === undefined)
       throw new AppError("Você precisa definir o status do dispositivo");
-    // serial:
     if (!serial || serial.length > 80)
       throw new AppError(
         "O banco de dados não aceita seriais com mais de 80 caracteres"
       );
-    // greenhousesid:
     if (!greenhousesid)
       throw new AppError("O identificador da estufa é obrigatório");
 

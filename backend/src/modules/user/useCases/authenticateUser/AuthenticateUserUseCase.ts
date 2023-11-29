@@ -21,7 +21,6 @@ export class AuthenticateUserUseCase {
     email,
     pass,
   }: AuthenticateUserDTO): Promise<IAuthenticateUserResponse> {
-    // Verify if user exists
     const user = await prisma.users.findFirst({
       where: {
         email,
@@ -30,10 +29,8 @@ export class AuthenticateUserUseCase {
 
     if (!user) throw new AppError("Usuário não encontrado");
 
-    // Verify if pass is correct
     if (user.pass !== pass) throw new AppError("Senha incorreta");
 
-    // Generate token
     const token = jwt.sign(
       {
         cpf: user.cpf,
@@ -47,7 +44,6 @@ export class AuthenticateUserUseCase {
 
     if (!token) throw new AppError("Não foi possível gerar o token");
 
-    // Get user greenhouses
     const greenhouses = await prisma.users
       .findFirst({
         where: {

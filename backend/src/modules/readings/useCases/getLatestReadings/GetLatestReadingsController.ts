@@ -7,16 +7,12 @@ export class GetLatestReadingsController {
   async handle(request: Request, response: Response): Promise<Response> {
     const { deviceId, greatness, initialDate } = request.params;
 
-    //  Verificando se o parâmetro greatness é válido e do tipo correto
     if (!greatness || !Readings_Greatness.hasOwnProperty(greatness))
       throw new AppError("A grandeza informada é inválida");
-
-    //  Verificando se o parâmetro deviceId é válido e do tipo correto
 
     if (!deviceId || isNaN(Number(deviceId)))
       throw new AppError("O id do dispositivo informado é inválido");
 
-    //  Verificando se o parâmetro initialDate é válido e do tipo correto
     const dateAndTimeRegex =
       /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})$/;
     let convertedInitialDate: Date;
@@ -27,7 +23,6 @@ export class GetLatestReadingsController {
     convertedInitialDate = new Date(initialDate);
     convertedInitialDate.setUTCHours(convertedInitialDate.getUTCHours() - 3);
 
-    // se a data inicial for maior que a data atual, retorna erro
     if (convertedInitialDate > new Date())
       throw new AppError("A data inicial não pode ser maior que a data atual");
 

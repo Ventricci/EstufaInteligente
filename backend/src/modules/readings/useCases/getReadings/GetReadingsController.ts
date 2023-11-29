@@ -8,18 +8,16 @@ export class GetReadingsController {
   async handle(request: Request, response: Response) {
     const { greenhousesid, greatness, initialDate, finalDate } = request.params;
 
-    // validando se os campos estão corretos
-    // greenhousesid
     if (!greenhousesid || isNaN(Number(greenhousesid)))
       throw new AppError("O id da estufa informado é inválido");
-    // greatness
+
     if (
       !greatness ||
       (greatness !== Readings_Greatness.temperature &&
         greatness !== Readings_Greatness.humidity)
     )
       throw new AppError("A grandeza informada é inválida");
-    // initialDate e finalDate
+
     const dateAndTimeRegex =
       /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})$/;
     let convertedInitialDate: Date;

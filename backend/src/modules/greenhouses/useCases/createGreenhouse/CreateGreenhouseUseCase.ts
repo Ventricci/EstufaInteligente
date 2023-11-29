@@ -11,7 +11,6 @@ export class CreateGreenhouseUseCase {
     user_cpf,
     address_id,
   }: CreateGreenhouseDTO): Promise<Greenhouses> {
-    // Obter o id do usuário
     const user_id = await prisma.users.findFirst({
       select: {
         id: true,
@@ -23,7 +22,6 @@ export class CreateGreenhouseUseCase {
 
     if (!user_id) throw new AppError("Usuário não encontrado");
 
-    // Criar uma estufa
     const greenhouse = await prisma.greenhouses.create({
       data: {
         name,

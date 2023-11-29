@@ -7,11 +7,9 @@ export class GetLastReadingController {
   async handle(request: Request, response: Response): Promise<Response> {
     const { deviceId, greatness } = request.params;
 
-    //  Verificando se o parâmetro greatness é válido e do tipo correto
     if (!greatness || !Readings_Greatness.hasOwnProperty(greatness))
       throw new AppError("A grandeza informada é inválida");
 
-    //  Verificando se o parâmetro deviceId é válido e do tipo correto
     if (isNaN(Number(deviceId)))
       throw new AppError("O id do dispositivo informado é inválido");
 

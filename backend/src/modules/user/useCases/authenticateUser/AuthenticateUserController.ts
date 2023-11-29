@@ -7,8 +7,6 @@ export class AuthenticateUserController {
   async handle(request: Request, response: Response) {
     const { email, pass } = request.body as AuthenticateUserDTO;
 
-    // validando se os campos estão corretos
-    // email:
     const emailRegex = /\S+@\S+\.\S+/;
     if (!email || !emailRegex.test(email))
       throw new AppError("O email informado não é válido");
@@ -17,7 +15,6 @@ export class AuthenticateUserController {
         "O Banco de dados não aceita emails com mais de 160 caracteres"
       );
 
-    // pass:
     if (!pass || pass.length > 30) throw new AppError("Senha inválida");
 
     const authenticateUserUseCase = new AuthenticateUserUseCase();

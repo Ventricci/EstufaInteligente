@@ -18,7 +18,6 @@ export class CreateUserUseCase {
     state,
     adjunct,
   }: CreateUserDTO): Promise<Users> {
-    // Verify if user already exists
     const userAlreadyExists = await prisma.users.findFirst({
       where: {
         cpf,
@@ -27,7 +26,6 @@ export class CreateUserUseCase {
 
     if (userAlreadyExists) throw new AppError("Usuário já cadastrado");
 
-    // Create address
     const address = await prisma.addresses.create({
       data: {
         cep,
@@ -43,7 +41,6 @@ export class CreateUserUseCase {
 
     if (!address) throw new AppError("Não foi possível criar o endereço");
 
-    // Create user
     const user = await prisma.users.create({
       data: {
         name,
@@ -57,7 +54,6 @@ export class CreateUserUseCase {
 
     if (!user) throw new AppError("Não foi possível criar o usuário");
 
-    // Create a Users_Addresses relationship
     const users_Addresses = await prisma.users_Adresses.create({
       data: {
         users: {

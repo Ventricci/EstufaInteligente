@@ -5,7 +5,6 @@ import { SendActuationDTO } from "../../dtos/SendActuationDTO";
 
 export class SendActuationUseCase {
   async execute({ deviceId }: SendActuationDTO): Promise<any> {
-    // Verificar se existe um dispositivo com o deviceId informado
     const deviceExists = await prisma.devices.findUnique({
       where: {
         id: deviceId,
@@ -15,7 +14,6 @@ export class SendActuationUseCase {
     if (!deviceExists)
       throw new AppError("Não existe um dispositivo com o id informado");
 
-    // Obter o serial do dispositivo
     const deviceSerial = deviceExists.serial;
 
     const oldStatus = deviceExists.status;

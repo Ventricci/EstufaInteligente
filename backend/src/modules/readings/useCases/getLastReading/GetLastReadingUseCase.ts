@@ -13,14 +13,12 @@ export class GetLastReadingUseCase {
     greatness: Readings_Greatness,
     deviceId: number
   ): Promise<IResponse> {
-    //  Verificando se o dispositivo existe
     const device = await prisma.devices.findUnique({
       where: { id: deviceId },
     });
 
     if (!device) throw new AppError("O dispositivo informado não existe");
 
-    // Obtendo a última leitura do dispositivo
     const lastReading = await prisma.readings.findFirst({
       where: { devicesid: deviceId, greatness },
       select: {

@@ -5,7 +5,6 @@ import { AppError } from "../../../../errors/AppError";
 
 export class ListGreenhousesUseCase {
   async execute({ user_cpf }: ListGreenhousesDTO): Promise<Greenhouses[]> {
-    // Obter o id do usuário
     const user_id = await prisma.users.findFirst({
       select: {
         id: true,
@@ -17,7 +16,6 @@ export class ListGreenhousesUseCase {
 
     if (!user_id) throw new AppError("Usuário não encontrado");
 
-    // Listar as estufas
     const greenhouses = await prisma.greenhouses.findMany({
       where: {
         usersid: user_id.id,

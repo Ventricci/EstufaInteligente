@@ -6,7 +6,6 @@ export class GetGreenhouseController {
   async handle(request: Request, response: Response): Promise<Response> {
     const { greenhouseId } = request.params;
 
-    // verificando se greenhouseId é válido e do tipo correto
     if (!greenhouseId || Number.isNaN(Number(greenhouseId)))
       throw new AppError("É necessário informar um id de estufa válido");
 

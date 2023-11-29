@@ -14,13 +14,12 @@ export class GetLatestReadingsUseCase {
     deviceId: number,
     initialDate: Date
   ): Promise<IReadings[]> {
-    //  Verificando se o dispositivo existe
     const device = await prisma.devices.findUnique({
       where: { id: deviceId },
     });
 
     if (!device) throw new AppError("O dispositivo informado não existe");
-    // Obtendo as leituras do dispositivo, a partir da data inicial até a data atual
+
     const latestReadings = await prisma.readings.findMany({
       where: {
         devicesid: deviceId,

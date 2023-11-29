@@ -10,7 +10,6 @@ export class CreateDeviceUseCase {
     serial,
     greenhousesid,
   }: CreateDeviceDTO) {
-    // Verify if device already exists
     const deviceAlreadyExists = await prisma.devices.findFirst({
       where: {
         serial,
@@ -21,7 +20,7 @@ export class CreateDeviceUseCase {
       throw new AppError(
         "Um dispositivo dessa categoria e com esse serial já está cadastrado"
       );
-    // Create device
+
     const device = await prisma.devices.create({
       data: {
         name,

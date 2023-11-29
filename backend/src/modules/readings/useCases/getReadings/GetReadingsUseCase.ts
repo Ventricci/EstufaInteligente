@@ -48,13 +48,11 @@ export class GetReadingsUseCase {
 
     if (!readings) throw new AppError("Leituras não encontradas");
 
-    // Criar um mapa para agrupar as leituras por dispositivo
     const readingsByDevice = new Map();
 
     for (const reading of readings) {
       const { devicesid, id, value, datetime } = reading;
 
-      // Verifica se já existe uma entrada para o dispositivo no mapa
       if (!readingsByDevice.has(devicesid)) {
         readingsByDevice.set(devicesid, {
           deviceId: devicesid,
@@ -62,12 +60,10 @@ export class GetReadingsUseCase {
         });
       }
 
-      // Adiciona a leitura ao dispositivo correspondente no mapa
       const deviceReadings = readingsByDevice.get(devicesid).readings;
       deviceReadings.push({ id, value, datetime });
     }
 
-    // Converter o mapa de volta para um array de objetos
     const groupedReadings = [...readingsByDevice.values()];
 
     if (!groupedReadings)
