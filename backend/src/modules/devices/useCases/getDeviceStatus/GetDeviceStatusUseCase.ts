@@ -1,8 +1,8 @@
+import { AppError } from "../../../../errors/AppError";
 import { prisma } from "../../../../prisma/client";
 import { GetDeviceStatusDTO } from "../../dtos/DevicesDTO";
 
 interface IResponse {
-  errorMessage?: string;
   status?: "Ligado" | "Desligado";
 }
 
@@ -17,8 +17,7 @@ export class GetDeviceStatusUseCase {
       },
     });
 
-    if (!device)
-      return { errorMessage: "Houve um erro ao obter o dispositivo" };
+    if (!device) throw new AppError("Houve um erro ao buscar o dispositivo");
 
     return { status: device.status ? "Ligado" : "Desligado" };
   }

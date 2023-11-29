@@ -14,7 +14,7 @@ export class ListGreenhousesUseCase {
       },
     });
 
-    if (!user_id) throw new AppError("Usuário não encontrado");
+    if (!user_id) throw new AppError("Usuário com este CPF não encontrado");
 
     const greenhouses = await prisma.greenhouses.findMany({
       where: {
