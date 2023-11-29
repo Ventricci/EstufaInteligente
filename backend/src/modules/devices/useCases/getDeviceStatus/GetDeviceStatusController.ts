@@ -1,3 +1,4 @@
+import { AppError } from "../../../../errors/AppError";
 import { Request, Response } from "express";
 import { GetDeviceStatusUseCase } from "./GetDeviceStatusUseCase";
 
@@ -5,15 +6,10 @@ export class GetDeviceStatusController {
   async handle(request: Request, response: Response) {
     const { deviceId } = request.params;
 
-    if (!deviceId) {
-      return response
-        .status(400)
-        .send({ errorMessage: "DeviceId é obrigatório" });
-    } else if (isNaN(Number(deviceId))) {
-      return response
-        .status(400)
-        .send({ errorMessage: "DeviceId deve ser um número" });
-    }
+    if (!deviceId)
+      throw new AppError("É necessário informar o id do dispositivo");
+    else if (isNaN(Number(deviceId)))
+      throw new AppError("O id do dispositivo deve ser um número");
 
     const getDeviceStatusUseCase = new GetDeviceStatusUseCase();
 
@@ -21,10 +17,6 @@ export class GetDeviceStatusController {
       deviceId: Number(deviceId),
     });
 
-    if (result.errorMessage) {
-      return response.status(400).send(result);
-    } else {
-      return response.status(200).send(result);
-    }
+    return response.status(200).json(result);
   }
 }

@@ -1,3 +1,4 @@
+import { AppError } from "../../../../errors/AppError";
 import { Request, Response } from "express";
 import { GetGreenhouseUseCase } from "./GetGreenhouseUseCase";
 
@@ -6,20 +7,13 @@ export class GetGreenhouseController {
     const { greenhouseId } = request.params;
 
     // verificando se greenhouseId é válido e do tipo correto
-    if (!greenhouseId || Number.isNaN(Number(greenhouseId))) {
-      return response
-        .status(400)
-        .json({ errorMessage: "Id de estufa inválido" });
-    }
+    if (!greenhouseId || Number.isNaN(Number(greenhouseId)))
+      throw new AppError("É necessário informar um id de estufa válido");
 
     const getGreenhouseUseCase = new GetGreenhouseUseCase();
 
     const result = await getGreenhouseUseCase.execute(Number(greenhouseId));
 
-    if (!result) {
-      return response.status(404).json(result);
-    } else {
-      return response.status(200).json(result);
-    }
+    return response.status(200).json(result);
   }
 }

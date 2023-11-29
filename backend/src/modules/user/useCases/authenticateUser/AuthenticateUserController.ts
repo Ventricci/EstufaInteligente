@@ -1,3 +1,4 @@
+import { AppError } from "../../../../errors/AppError";
 import { Request, Response } from "express";
 import { AuthenticateUserUseCase } from "./AuthenticateUserUseCase";
 import { AuthenticateUserDTO } from "../../dtos/UserDTO";
@@ -9,25 +10,15 @@ export class AuthenticateUserController {
     // validando se os campos estão corretos
     // email:
     const emailRegex = /\S+@\S+\.\S+/;
-    if (!email || email.length > 160) {
-      return response
-        .status(400)
-        .json({
-          error:
-            "O banco de dados não aceita emails com mais de 160 caracteres",
-        });
-    } else if (!emailRegex.test(email)) {
-      return response.status(400).json({ error: "O email é inválido" });
-    }
+    if (!email || !emailRegex.test(email))
+      throw new AppError("O email informado não é válido");
+    else if (email.length > 160)
+      throw new AppError(
+        "O Banco de dados não aceita emails com mais de 160 caracteres"
+      );
 
     // pass:
-    if (!pass || pass.length > 30) {
-      return response
-        .status(400)
-        .json({
-          error: "O banco de dados não aceita senhas com mais de 30 caracteres",
-        });
-    }
+    if (!pass || pass.length > 30) throw new AppError("Senha inválida");
 
     const authenticateUserUseCase = new AuthenticateUserUseCase();
 
@@ -36,10 +27,6 @@ export class AuthenticateUserController {
       pass,
     });
 
-    if (result.auth) {
-      return response.status(200).json(result);
-    } else {
-      return response.status(401).json(result);
-    }
+    return response.status(200).json(result);
   }
 }

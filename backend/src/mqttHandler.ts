@@ -94,7 +94,7 @@ class MqttHandler {
               );
               console.log("--------------------------------------------------");
             } else {
-              console.log("[✓] Dados armazenados com sucesso!");
+              console.log(`[✓] Dados armazenados com sucesso! ${result}\n`);
               console.log("--------------------------------------------------");
             }
           });
@@ -104,9 +104,7 @@ class MqttHandler {
           .handle(topic, message.toString())
           .then((result: IResponse) => {
             if (result.success) {
-              console.log(
-                "[✓] Status do dispositivo atualizado com sucesso!\n"
-              );
+              console.log(`[✓] Successo! ${result.success}\n`);
               console.log("--------------------------------------------------");
             } else if (result.error) {
               console.log(

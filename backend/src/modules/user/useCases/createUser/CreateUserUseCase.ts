@@ -1,11 +1,7 @@
 import { Users } from "@prisma/client";
 import { prisma } from "../../../../prisma/client";
 import { CreateUserDTO } from "../../dtos/UserDTO";
-
-interface IResponse {
-  errorMessage?: string;
-  successMessage?: string;
-}
+import { AppError } from "../../../../errors/AppError";
 
 export class CreateUserUseCase {
   async execute({
@@ -21,7 +17,7 @@ export class CreateUserUseCase {
     city,
     state,
     adjunct,
-  }: CreateUserDTO): Promise<Users | IResponse> {
+  }: CreateUserDTO): Promise<Users> {
     // Verify if user already exists
     const userAlreadyExists = await prisma.users.findFirst({
       where: {
@@ -29,7 +25,7 @@ export class CreateUserUseCase {
       },
     });
 
-    if (userAlreadyExists) return { errorMessage: "Usuário já cadastrado" };
+    if (userAlreadyExists) throw new AppError("Usuário já cadastrado");
 
     // Create address
     const address = await prisma.addresses.create({
@@ -45,6 +41,8 @@ export class CreateUserUseCase {
       },
     });
 
+    if (!address) throw new AppError("Não foi possível criar o endereço");
+
     // Create user
     const user = await prisma.users.create({
       data: {
@@ -57,8 +55,10 @@ export class CreateUserUseCase {
       },
     });
 
+    if (!user) throw new AppError("Não foi possível criar o usuário");
+
     // Create a Users_Addresses relationship
-    await prisma.users_Adresses.create({
+    const users_Addresses = await prisma.users_Adresses.create({
       data: {
         users: {
           connect: {
@@ -73,6 +73,9 @@ export class CreateUserUseCase {
       },
     });
 
-    return { successMessage: "Usuário criado com sucesso!" };
+    if (!users_Addresses)
+      throw new AppError("Não foi possível vincular o usuário ao endereço");
+
+    return user;
   }
 }

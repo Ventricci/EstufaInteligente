@@ -2,22 +2,25 @@ import { Greenhouses, Users } from "@prisma/client";
 import { prisma } from "../../../../prisma/client";
 import { AuthenticateUserDTO } from "../../dtos/UserDTO";
 import jwt from "jsonwebtoken";
+import { AppError } from "../../../../errors/AppError";
 
-interface IResponse {
+interface IAuthenticateUserResponse {
   auth: boolean;
-  token?: string | null;
-  id?: Users["id"];
-  name?: Users["name"];
-  cpf?: Users["cpf"];
-  email?: Users["email"];
-  role?: Users["role"];
-  photo?: Users["photo"];
-  greenhouses?: Greenhouses["id"][];
-  errorMessage?: string;
+  token: string;
+  id: Users["id"];
+  name: Users["name"];
+  cpf: Users["cpf"];
+  email: Users["email"];
+  role: Users["role"];
+  photo: Users["photo"];
+  greenhouses: Greenhouses["name"][];
 }
 
 export class AuthenticateUserUseCase {
-  async execute({ email, pass }: AuthenticateUserDTO): Promise<IResponse> {
+  async execute({
+    email,
+    pass,
+  }: AuthenticateUserDTO): Promise<IAuthenticateUserResponse> {
     // Verify if user exists
     const user = await prisma.users.findFirst({
       where: {
@@ -25,22 +28,10 @@ export class AuthenticateUserUseCase {
       },
     });
 
-    if (!user) {
-      return {
-        auth: false,
-        token: null,
-        errorMessage: "O email informado não está cadastrado",
-      };
-    }
+    if (!user) throw new AppError("Usuário não encontrado");
 
     // Verify if pass is correct
-    if (user.pass !== pass) {
-      return {
-        auth: false,
-        token: null,
-        errorMessage: "A senha informada está incorreta",
-      };
-    }
+    if (user.pass !== pass) throw new AppError("Senha incorreta");
 
     // Generate token
     const token = jwt.sign(
@@ -54,12 +45,7 @@ export class AuthenticateUserUseCase {
       }
     );
 
-    if (!token)
-      return {
-        auth: false,
-        token: null,
-        errorMessage: "Erro ao gerar token",
-      };
+    if (!token) throw new AppError("Não foi possível gerar o token");
 
     // Get user greenhouses
     const greenhouses = await prisma.users
@@ -72,7 +58,7 @@ export class AuthenticateUserUseCase {
       .then((greenhouses) => {
         return greenhouses
           ? greenhouses.map((greenhouse) => {
-              return greenhouse.id;
+              return greenhouse.name;
             })
           : [];
       });

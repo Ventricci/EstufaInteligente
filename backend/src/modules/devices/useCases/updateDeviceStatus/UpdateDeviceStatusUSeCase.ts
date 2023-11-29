@@ -41,7 +41,7 @@ export class UpdateDeviceStatusUseCase {
       };
     } else {
       return {
-        success: "Status atualizado com sucesso.",
+        success: "Status do dispositivo atualizado com sucesso.",
       };
     }
   }

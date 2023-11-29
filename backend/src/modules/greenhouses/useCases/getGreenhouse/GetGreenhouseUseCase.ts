@@ -1,10 +1,9 @@
 import { Greenhouses } from "@prisma/client";
 import { prisma } from "../../../../prisma/client";
+import { AppError } from "../../../../errors/AppError";
 
 export class GetGreenhouseUseCase {
-  async execute(
-    greenhouseId: number
-  ): Promise<Greenhouses[] | { errorMessage: string }> {
+  async execute(greenhouseId: number): Promise<Greenhouses[]> {
     // verificando se a estufa existe
     const greenhouses = await prisma.greenhouses.findMany({
       where: {
@@ -12,9 +11,7 @@ export class GetGreenhouseUseCase {
       },
     });
 
-    if (!greenhouses) {
-      return { errorMessage: "Estufa não encontrada" };
-    }
+    if (!greenhouses) throw new AppError("Estufa não encontrada");
 
     return greenhouses;
   }
