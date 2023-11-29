@@ -2,7 +2,7 @@ import { AppError } from "../../../../errors/AppError";
 import { Readings, Readings_Greatness } from "@prisma/client";
 import { prisma } from "../../../../prisma/client";
 
-interface IResponse {
+interface IReading {
   id: Readings["id"];
   value: Readings["value"];
   datetime: Readings["datetime"];
@@ -12,7 +12,7 @@ export class GetLastReadingUseCase {
   async execute(
     greatness: Readings_Greatness,
     deviceId: number
-  ): Promise<IResponse> {
+  ): Promise<IReading> {
     const device = await prisma.devices.findUnique({
       where: { id: deviceId },
     });

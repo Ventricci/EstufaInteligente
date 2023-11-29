@@ -22,6 +22,17 @@ export class CreateGreenhouseUseCase {
 
     if (!user_id) throw new AppError("Usuário não encontrado");
 
+    const address = await prisma.addresses.findFirst({
+      where: {
+        id: address_id,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!address) throw new AppError("Endereço não encontrado");
+
     const greenhouse = await prisma.greenhouses.create({
       data: {
         name,
@@ -29,7 +40,7 @@ export class CreateGreenhouseUseCase {
         idealhumidty: idealHumidity,
         usersid: user_id.id,
         deleted: false,
-        addressesid: address_id,
+        addressesid: address.id,
       },
     });
 
