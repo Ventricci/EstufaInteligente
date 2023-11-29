@@ -1,3 +1,4 @@
+import { AppError } from "../../../../errors/AppError";
 import { prisma } from "../../../../prisma/client";
 import { CreateDeviceDTO } from "../../dtos/DevicesDTO";
 
@@ -9,7 +10,6 @@ export class CreateDeviceUseCase {
     serial,
     greenhousesid,
   }: CreateDeviceDTO) {
-    // Verify if device already exists
     const deviceAlreadyExists = await prisma.devices.findFirst({
       where: {
         serial,
@@ -17,11 +17,10 @@ export class CreateDeviceUseCase {
       },
     });
     if (deviceAlreadyExists)
-      return {
-        errorMessage:
-          "Um dispositivo dessa categoria e com esse serial já está cadastrado",
-      };
-    // Create device
+      throw new AppError(
+        "Um dispositivo dessa categoria e com esse serial já está cadastrado"
+      );
+
     const device = await prisma.devices.create({
       data: {
         name,
@@ -32,8 +31,9 @@ export class CreateDeviceUseCase {
         deleted: false,
       },
     });
-    return device
-      ? { successMessage: "Dispositivo criado com sucesso!" }
-      : { errorMessage: "Houve um erro ao criar o dispositivo" };
+
+    if (!device) throw new AppError("Houve um erro ao criar o dispositivo");
+
+    return device;
   }
 }

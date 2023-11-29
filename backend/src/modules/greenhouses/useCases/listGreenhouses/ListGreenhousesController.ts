@@ -9,6 +9,6 @@ export class ListGreenhousesController {
 
     const greenhouses = await listGreenhousesUseCase.execute({ user_cpf });
 
-    return response.json(greenhouses);
+    return response.status(200).json(greenhouses);
   }
 }

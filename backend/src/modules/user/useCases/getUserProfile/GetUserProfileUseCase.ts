@@ -1,19 +1,16 @@
 import { Users } from "@prisma/client";
 import { prisma } from "../../../../prisma/client";
-
-export type Response = Users | { errorMessage: string };
+import { AppError } from "../../../../errors/AppError";
 
 export class GetUserProfileUseCase {
-  async execute(userId: number): Promise<Response> {
+  async execute(userId: number): Promise<Users> {
     const user = await prisma.users.findUnique({
       where: {
         id: userId,
       },
     });
 
-    if (!user) {
-      return { errorMessage: "Usuário não encontrado" };
-    }
+    if (!user) throw new AppError("Usuário não encontrado");
 
     return user;
   }

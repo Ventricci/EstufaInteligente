@@ -18,9 +18,7 @@ const ValidateToken = (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    // Verificando se decoded é um objeto e se ele possui a propriedade cpf
     if (typeof decoded === "object" && decoded.hasOwnProperty("cpf")) {
-      // Se sim, então o token é válido
       req.body.cpf = decoded.cpf;
     } else {
       return res.status(401).json({

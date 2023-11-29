@@ -1,10 +1,7 @@
+import { AppError } from "../../../../errors/AppError";
 import { Greenhouses } from "@prisma/client";
 import { prisma } from "../../../../prisma/client";
 import { CreateGreenhouseDTO } from "../../dtos/GreenhousesDTO";
-
-interface IResponse {
-  errorMessage: string;
-}
 
 export class CreateGreenhouseUseCase {
   async execute({
@@ -13,8 +10,7 @@ export class CreateGreenhouseUseCase {
     idealHumidity,
     user_cpf,
     address_id,
-  }: CreateGreenhouseDTO): Promise<Greenhouses | IResponse> {
-    // Obter o id do usuário
+  }: CreateGreenhouseDTO): Promise<Greenhouses> {
     const user_id = await prisma.users.findFirst({
       select: {
         id: true,
@@ -24,10 +20,8 @@ export class CreateGreenhouseUseCase {
       },
     });
 
-    if (!user_id)
-      return { errorMessage: "Houve um erro ao obter o id do usuário" };
+    if (!user_id) throw new AppError("Usuário não encontrado");
 
-    // Criar uma estufa
     const greenhouse = await prisma.greenhouses.create({
       data: {
         name,
@@ -39,8 +33,7 @@ export class CreateGreenhouseUseCase {
       },
     });
 
-    if (!greenhouse)
-      return { errorMessage: "Houve um erro ao criar a estufa no banco" };
-    else return greenhouse;
+    if (!greenhouse) throw new AppError("Não foi possível criar a estufa");
+    return greenhouse;
   }
 }

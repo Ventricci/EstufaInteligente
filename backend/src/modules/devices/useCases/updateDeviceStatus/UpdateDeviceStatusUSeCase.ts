@@ -8,7 +8,6 @@ export class UpdateDeviceStatusUseCase {
     deviceSerial,
     deviceStatus,
   }: UpdateDeviceStatusDTO): Promise<IResponse> {
-    // Verificando se o dispositivo existe e se é um atuador e devolve o id
     const deviceId = await prisma.devices.findFirst({
       where: {
         serial: deviceSerial,
@@ -25,7 +24,6 @@ export class UpdateDeviceStatusUseCase {
       };
     }
 
-    // Atualizando o status do dispositivo
     const device = await prisma.devices.update({
       where: {
         id: deviceId.id,
@@ -41,7 +39,7 @@ export class UpdateDeviceStatusUseCase {
       };
     } else {
       return {
-        success: "Status atualizado com sucesso.",
+        success: "Status do dispositivo atualizado com sucesso.",
       };
     }
   }

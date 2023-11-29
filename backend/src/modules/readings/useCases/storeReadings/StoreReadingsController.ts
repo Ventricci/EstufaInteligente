@@ -20,22 +20,17 @@ export class StoreReadingsController {
     const dateTime = new Date(timestamp);
     dateTime.setUTCHours(dateTime.getUTCHours() - 3);
 
-    if (!greatness) {
-      result = new Error("Invalid topic");
-    } else if (!serial) {
-      result = new Error("Invalid device serial");
-    } else if (!value) {
-      result = new Error("Invalid value");
-    } else if (!dateTime) {
-      result = new Error("Invalid date");
-    } else {
+    if (!greatness) result = new Error("Invalid topic");
+    else if (!serial) result = new Error("Invalid device serial");
+    else if (!value) result = new Error("Invalid value");
+    else if (!dateTime) result = new Error("Invalid date");
+    else
       result = await storeReadingsUseCase.execute({
         greatness,
         serial,
         value,
         dateTime,
       });
-    }
 
     return result;
   }
