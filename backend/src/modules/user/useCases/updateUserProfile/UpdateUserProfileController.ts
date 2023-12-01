@@ -7,7 +7,7 @@ export class UpdateUserProfileController {
     const { userId } = request.params;
     const { name, email, cpf, password } = request.body;
 
-    if (!userId || Number.isNaN(Number(userId)))
+    if (!userId || isNaN(Number(userId)))
       throw new AppError("Usuário inválido");
 
     if (!name && !email && !cpf && !password)
