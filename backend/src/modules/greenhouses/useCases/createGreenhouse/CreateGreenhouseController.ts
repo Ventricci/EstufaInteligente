@@ -23,7 +23,7 @@ export class CreateGreenhouseController {
     if (idealHumidity < 0 || idealHumidity > 100)
       throw new AppError("Umidade ideal inválida");
 
-    if (Number.isNaN(address_id))
+    if (isNaN(address_id))
       throw new AppError("O ID do endereço deve ser um número");
 
     const createGreenhouseUseCase = new CreateGreenhouseUseCase();
