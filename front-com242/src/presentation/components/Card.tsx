@@ -14,8 +14,6 @@ import { AppContext, IUserApiData } from "../../context/AppContext";
 import { useContext } from "react";
 
 const baseURL = "http://localhost:3000/users/signin";
-const baseUrlDevices = "http://localhost:3000/devices/list";
-const baseUrlGreenhouse = "http://localhost:3000/greenhouses";
 
 // eslint-disable-next-line no-empty-pattern
 const ColorButton = styled(Button)<ButtonProps>(({}) => ({
@@ -60,7 +58,7 @@ interface UserLogin {
 
 function Card() {
 
-  const { setStateUserApiData, setStateToken, setStateDevicesData, setStateUserGreenhouses } = useContext(AppContext)
+  const { setStateUserApiData, setStateToken } = useContext(AppContext)
 
   const [showPassword, setShowPassword] = React.useState(false);
   const navigate = useNavigate();
@@ -88,7 +86,6 @@ function Card() {
         pass: data.pass,
       })
       .then(function (response) {
-        console.log(`userApiData: ${JSON.stringify(response.data)}`);
         return response.data;
       })
       .catch(function (error) {
@@ -97,36 +94,10 @@ function Card() {
       });
 
     if (userApiData && userApiData.auth) {
-      console.log(`userApiData: ${JSON.stringify(userApiData)}`);
+      // salvar no localStorage
+      localStorage.setItem("userApiData", JSON.stringify(userApiData));
       setStateUserApiData(userApiData)
-      console.log(`token: ${userApiData.token}`);
       setStateToken(userApiData.token)
-
-      userApiData.greenhouses.forEach(async (greenhouseId) => {
-        await axios.get(`${baseUrlGreenhouse}/${greenhouseId}`, {
-          headers: {
-            Authorization: userApiData.token,
-          },
-        }).then((res) => {
-          console.log(`greenhouse ${greenhouseId}: ${JSON.stringify(res.data)}`);
-          if (res.status === 200) {
-            setStateUserGreenhouses(res.data, true);
-          }
-        });
-      });
-
-      userApiData.greenhouses.forEach(async (greenhouseId) => {
-        await axios.get(`${baseUrlDevices}/${greenhouseId}`, {
-          headers: {
-            Authorization: userApiData.token,
-          },
-        }).then((res) => {
-          console.log(`devices de ${greenhouseId}: ${JSON.stringify(res.data)}`);
-          if (res.status === 200) {
-            setStateDevicesData(res.data, true);
-          }
-        });
-      });
 
       window.alert("Logado com sucesso!");
       navigate("/dashboard");

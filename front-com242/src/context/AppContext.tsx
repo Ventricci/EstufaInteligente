@@ -1,4 +1,8 @@
-import { createContext, useState } from 'react';
+import axios from 'axios';
+import { createContext, useEffect, useState } from 'react';
+
+const baseUrlGreenhouse = "http://localhost:3000/greenhouses";
+const baseUrlDevices = "http://localhost:3000/devices/list";
 
 export interface IUserApiData {
   auth: boolean;
@@ -109,6 +113,54 @@ export function AppProvider({ children }: AppProviderProps) {
       setUserGreenhouses(value);
     }
   }
+
+  useEffect(() => {
+    const userApiDataLocal = localStorage.getItem('userApiData');
+    if (userApiDataLocal) {
+      setUserApiData(JSON.parse(userApiDataLocal));
+      setToken(JSON.parse(userApiDataLocal).token);
+    }
+  }, []);
+
+  useEffect(() => {
+    const greenhouses: GreenhouseData[] = [];
+    const devices: IDevicesData[] = [];
+
+    const run = async () => {
+      UserApiData.greenhouses.forEach(async (greenhouseId) => {
+        await axios.get(`${baseUrlGreenhouse}/${greenhouseId}`, {
+          headers: {
+            Authorization: token,
+          },
+        }).then((res) => {
+          if (res.status === 200) {
+            greenhouses.push(...res.data);
+            setUserGreenhouses(greenhouses);
+            console.log(`greenhouse ${greenhouseId}: ${JSON.stringify(greenhouses)}`);
+          }
+        });
+      });
+
+      UserApiData.greenhouses.forEach(async (greenhouseId) => {
+        await axios.get(`${baseUrlDevices}/${greenhouseId}`, {
+          headers: {
+            Authorization: token,
+          },
+        }).then((res) => {
+          if (res.status === 200) {
+            devices.push(...res.data);
+            setDevicesData(devices);
+            console.log(`devices de ${greenhouseId}: ${JSON.stringify(devices)}`);
+          }
+        });
+      });
+
+    };
+    if (UserApiData.greenhouses.length > 0) {
+      console.log('Obtendo os dados de greenhouses e devices...');
+      run();
+    }
+  }, [UserApiData.greenhouses, token]);
 
   return (
     <AppContext.Provider

@@ -12,7 +12,6 @@ import Button from "@mui/material/Button";
 import axios from "axios";
 import DatePickerApp from "./DatePicker";
 import { format } from "date-fns";
-import { SelectChangeEvent } from "@mui/material/Select";
 import { AppContext } from "../../context/AppContext";
 const baseUrlStatic = "http://localhost:3000/readings/interval";
 
@@ -81,29 +80,13 @@ export default function App() {
     idealTemperatureArray;
   }, [activeGreenhouseId, dataStatic, idealTemperatureArray, setStateActiveGreenhouseId]);
 
-  // const feito para atualizar o valor do greenhouseId, dependendo da escolha do usuario
-  const handleOnChange = (greenhouseName: SelectChangeEvent<string>) => {
-    greenhouseName.preventDefault();
-    const greenhouseId = userGreenhouses.find(
-      (greenhouse) => greenhouse.name === greenhouseName.target.value
-    )?.id;
-    if (greenhouseId) {
-      setStateActiveGreenhouseId(greenhouseId);
-    }
-  };
-
   useEffect(() => {
-    console.log(`greenhousesData depois do login: ${JSON.stringify(userGreenhouses)}`);
+    console.log(`Greenhouses: ${JSON.stringify(userGreenhouses)}`);
   }, [userGreenhouses]);
 
   return (
     <div className="bg-white h-[600px] w-[1900px] flex flex-row justify-center items-center">
-      <div className="flex flex-col">
-        <MultipleSelect
-          name={"Estufa"}
-          select={userGreenhouses.map((greenhouse) => greenhouse.name)}
-          onChange={(e) => handleOnChange(e)} 
-        />
+      <div className="flex flex-col">      
         <h2 className="p-8 text-[25px] font-sans font-bold">
           Média de variação das condições da estufa
         </h2>
