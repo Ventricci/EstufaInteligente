@@ -10,7 +10,7 @@ import MultipleSelect from "../../components/Select";
 
 function DashboardScreen() {
 
-  const { userGreenhouses, setStateActiveGreenhouseId } = useContext(AppContext);
+  const { userGreenhouses, setStateActiveGreenhouseId, activeGreenhouseId } = useContext(AppContext);
 
   const handleOnChange = (greenhouseName: SelectChangeEvent<string>) => {
     greenhouseName.preventDefault();
@@ -35,6 +35,9 @@ function DashboardScreen() {
             </p>
             <MultipleSelect
               name={"Estufa"}
+              value={userGreenhouses.find(
+                (greenhouse) => greenhouse.id === activeGreenhouseId
+              )?.name}
               select={userGreenhouses.map((greenhouse) => greenhouse.name)}
               onChange={(e) => handleOnChange(e)}
             />

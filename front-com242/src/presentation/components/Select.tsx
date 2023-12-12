@@ -19,10 +19,11 @@ const MenuProps = {
 interface PropTypes {
   name: string;
   select: string[];
+  value: string | undefined;
   onChange: SelectProps<string>["onChange"];
 }
 
-const MultipleSelect: React.FC<PropTypes> = ({ name, select, onChange }) => {
+const MultipleSelect: React.FC<PropTypes> = ({ name, select, value, onChange }) => {
   return (
     <div>
       <FormControl sx={{ m: 1, width: 300 }}>
@@ -31,6 +32,7 @@ const MultipleSelect: React.FC<PropTypes> = ({ name, select, onChange }) => {
           labelId="demo-multiple-name-label"
           id="demo-multiple-name"
           input={<OutlinedInput label="Name" />}
+          value={value}
           MenuProps={MenuProps}
           onChange={onChange}
         >

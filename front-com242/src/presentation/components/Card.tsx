@@ -96,6 +96,7 @@ function Card() {
     if (userApiData && userApiData.auth) {
       // salvar no localStorage
       localStorage.setItem("userApiData", JSON.stringify(userApiData));
+      localStorage.setItem("token", JSON.stringify(userApiData.token));
       setStateUserApiData(userApiData)
       setStateToken(userApiData.token)
 
