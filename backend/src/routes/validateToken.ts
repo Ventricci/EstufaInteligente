@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
-const ValidateToken = (req: Request, res: Response, next: NextFunction) => {
+const validateToken = (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers["authorization"];
 
   if (!token) {
@@ -30,4 +30,4 @@ const ValidateToken = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
-export { ValidateToken };
+export { validateToken };

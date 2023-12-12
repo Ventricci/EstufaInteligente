@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ValidateToken } from "./validateToken";
+import { validateToken } from "./validateToken";
 import { userRoutes } from "./user.routes";
 import { actuationRoutes } from "./actuation.routes";
 import { readingsRoutes } from "./readings.routes";
@@ -9,9 +9,9 @@ import { greenhousesRoutes } from "./greenhouses.routes";
 const routes = Router();
 
 routes.use("/users", userRoutes);
-routes.use("/actuation", actuationRoutes);
-routes.use("/readings", readingsRoutes);
-routes.use("/devices", devicesRoutes);
-routes.use("/greenhouses", greenhousesRoutes);
+routes.use("/actuation", validateToken, actuationRoutes);
+routes.use("/readings", validateToken, readingsRoutes);
+routes.use("/devices", validateToken, devicesRoutes);
+routes.use("/greenhouses", validateToken, greenhousesRoutes);
 
 export { routes };
