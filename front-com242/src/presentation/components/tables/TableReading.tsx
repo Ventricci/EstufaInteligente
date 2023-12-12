@@ -7,6 +7,8 @@ import {
 import DatePickerApp from "../DatePicker";
 import axios from "axios";
 import { format } from "date-fns";
+import { AppContext } from "../../../context/AppContext";
+import { useContext } from "react";
 
 const baseURL = "http://localhost:3000/readings/latest";
 
@@ -14,6 +16,9 @@ interface PropsTypes {
   deviceId: number;
 }
 const TableRead: React.FC<PropsTypes> = ({ deviceId }) => {
+
+  const { token } = useContext(AppContext);
+
   // definicao padrao da biblioteca para renderizar a table
   const [page, setPage] = React.useState(0);
 
@@ -58,7 +63,12 @@ const TableRead: React.FC<PropsTypes> = ({ deviceId }) => {
         `${baseURL}/${deviceId}/temperature/${format(
           initial as Date,
           "yyyy-MM-dd'T'HH:mm:ss"
-        )}`
+        )}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
       )
       .then((response) => {
 
@@ -83,7 +93,12 @@ const TableRead: React.FC<PropsTypes> = ({ deviceId }) => {
         `${baseURL}/${deviceId}/humidity/${format(
           initial as Date,
           "yyyy-MM-dd'T'HH:mm:ss"
-        )}`
+        )}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
       )
       .then((response) => {
 

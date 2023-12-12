@@ -10,8 +10,14 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import "./card.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { AppContext, IUserApiData } from "../../context/AppContext";
+import { useContext } from "react";
+
 const baseURL = "http://localhost:3000/users/signin";
 const baseUrlDevices = "http://localhost:3000/devices/list";
+const baseUrlGreenhouse = "http://localhost:3000/greenhouses";
+
+// eslint-disable-next-line no-empty-pattern
 const ColorButton = styled(Button)<ButtonProps>(({}) => ({
   color: "#ffffff",
   backgroundColor: "#A8C686",
@@ -44,7 +50,18 @@ const CssTextField = styled(TextField)({
   },
 });
 
+
+  // interface criada para facilitar o manuseio dos dados do usuario
+  // na hora de realizar o POST de login
+interface UserLogin {
+  email: string;
+  pass: string;
+}
+
 function Card() {
+
+  const { setStateUserApiData, setStateToken, setStateDevicesData, setStateUserGreenhouses } = useContext(AppContext)
+
   const [showPassword, setShowPassword] = React.useState(false);
   const navigate = useNavigate();
 
@@ -55,58 +72,66 @@ function Card() {
     event.preventDefault();
   };
 
-  // interface criada para facilitar o manuseio dos dados do usuario
-  // na hora de realizar o POST de login
-  interface UserLogin {
-    email: string;
-    pass: string;
-  }
-
   // estado usado para armazenar as informacoes do usuario e requisitar o login no post
   const [data, setData] = React.useState<Partial<UserLogin>>({});
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // obriga o usuario a preencher os dois campos: email e senha
     if (Object.values(data).length !== 2) {
       window.alert("Preencha todos os campos.");
-    } else {
-      // realiza uma requisicao post com os dados armazenados em data
-      axios
-        .post(baseURL, {
-          email: data.email,
-          pass: data.pass,
-        })
-        .then(function (response) {
-          // apos obter a resposta da requisicao, salva os dados no localStorage, na variavel UserApiData
-          // esses dados serao usados para renderizar as opcoes de estufa, alem do nome associado ao usuario logado
-          localStorage.setItem("UserApiData", JSON.stringify(response.data));
+      return;
+    }
+    // realiza uma requisicao post com os dados armazenados em data
+    const userApiData: IUserApiData = await axios
+      .post(baseURL, {
+        email: data.email,
+        pass: data.pass,
+      })
+      .then(function (response) {
+        console.log(`userApiData: ${JSON.stringify(response.data)}`);
+        return response.data;
+      })
+      .catch(function (error) {
+        window.alert(error);
+        console.log(error);
+      });
 
-          const devicesData: any[] = [];
+    if (userApiData && userApiData.auth) {
+      console.log(`userApiData: ${JSON.stringify(userApiData)}`);
+      setStateUserApiData(userApiData)
+      console.log(`token: ${userApiData.token}`);
+      setStateToken(userApiData.token)
 
-          // funcao feita para armazenar os dados da estufa associadas ao usuario
-          response.data.greenhouses.map((data: any) => {
-            // apos o map, requisita um get para cada estufa associada ao usario
-            axios.get(`${baseUrlDevices}/${data}`).then((res) => {
-              // entao, faz-se um push das informacoes para devicesData
-              devicesData.push({ data: res.data, greenhouseId: data });
-
-              // chama-se a funcao stringify, pois o localStorage so armazena strings
-              localStorage.setItem("devicesData", JSON.stringify(devicesData));
-            });
-          });
-
-          // caso o codigo chegue ate aqui, o usuario eh logado
-          window.alert("Logado com sucesso!");
-
-          // e eh enviado para a dashboard
-          if (response.data.auth) {
-            navigate("/dashboard");
+      userApiData.greenhouses.forEach(async (greenhouseId) => {
+        await axios.get(`${baseUrlGreenhouse}/${greenhouseId}`, {
+          headers: {
+            Authorization: userApiData.token,
+          },
+        }).then((res) => {
+          console.log(`greenhouse ${greenhouseId}: ${JSON.stringify(res.data)}`);
+          if (res.status === 200) {
+            setStateUserGreenhouses(res.data, true);
           }
-        })
-        .catch(function (error) {
-          window.alert(error);
-          console.log(error);
         });
+      });
+
+      userApiData.greenhouses.forEach(async (greenhouseId) => {
+        await axios.get(`${baseUrlDevices}/${greenhouseId}`, {
+          headers: {
+            Authorization: userApiData.token,
+          },
+        }).then((res) => {
+          console.log(`devices de ${greenhouseId}: ${JSON.stringify(res.data)}`);
+          if (res.status === 200) {
+            setStateDevicesData(res.data, true);
+          }
+        });
+      });
+
+      window.alert("Logado com sucesso!");
+      navigate("/dashboard");
+    } else {
+      window.alert("Email ou senha incorretos.");
     }
   };
 

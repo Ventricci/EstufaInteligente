@@ -3,6 +3,8 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import axios from "axios";
+import { useContext } from "react";
+import { AppContext } from "../../../context/AppContext";
 
 const baseURL = "http://localhost:3000/actuation";
 
@@ -25,21 +27,16 @@ interface PropTypes {
 }
 
 const AppModal: React.FC<PropTypes> = ({ button, id }) => {
+
+  const { active, setStateActive, deviceStatus, setStateDeviceStatus, token } = useContext(AppContext);
+
   const [open, setOpen] = React.useState(false);
   const handleClose = () => {
   if (active === true) {
   setOpen(false);
-  setActive(false);
+  setStateActive(false);
   }
   };
-
-  // estado que obriga o modal a esperar 10000ms antes de renderizar a resposta
-  // isso da tempo para a requisicao bater no back e retornar para o front
-  const [active, setActive] = React.useState(false);
-
-  // estado associado a variavel deviceStatus da resposta da requisicao (usado para
-  // atualizar os valores no useEffect)
-  const [deviceStatus, setDeviceStatus] = React.useState(false);
 
   // estado associado a variavel successMessage da resposta da requisicao (usado para
   // mudar a mensagem no modal, de acordo com a resposta da requisicao)
@@ -50,17 +47,22 @@ const AppModal: React.FC<PropTypes> = ({ button, id }) => {
     setOpen(true);
      
     // seta 60000ms para que, apos esse tempo, a flag permita a resposta ser renderizada no modal
-    setTimeout(() => setActive(true), 6000);
+    setTimeout(() => setStateActive(true), 6000);
 
     await axios
       // requisicao post que passa a baseURL da requisicao, alem do id (recebido como prop)
-      .post(`${baseURL}/${id}`, {})
+      .post(`${baseURL}/${id}`, {
+        headers: {
+          Authorization: token,
+        },
+      })
       .then((response) => {
         // com a resposta da requisicao, seta-se os valores para os estados
-        setDeviceStatus(response.data.deviceStatus);
+        setStateDeviceStatus(response.data.deviceStatus);
         setMessage(response.data.successMessage);
         
-        localStorage.setItem("active", "true");
+        // localStorage.setItem("active", "true");
+        setStateActive(true);
       })
       .catch((error) => {
         console.log(error);
@@ -69,8 +71,8 @@ const AppModal: React.FC<PropTypes> = ({ button, id }) => {
 
   // useEffect usado para atualizar os valores active e deviceStatus, dentro do localStorage
   React.useEffect(() => {
-    localStorage.setItem("deviceStatus", deviceStatus.toString());
-  }, [active, deviceStatus]);
+    setStateDeviceStatus(deviceStatus);
+  }, [active, deviceStatus, setStateDeviceStatus]);
 
   return (
     <div>

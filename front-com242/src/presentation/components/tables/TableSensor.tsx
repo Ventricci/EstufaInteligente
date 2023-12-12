@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext } from "react";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -11,6 +11,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import CreateIcon from "@mui/icons-material/Create";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AppModalSensor from "../modals/ModalSensor";
+import { AppContext } from "../../../context/AppContext";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -33,30 +34,7 @@ const StyledTableRow = styled(TableRow)(({}) => ({
 }));
 
 export default function TableSensor() {
-  const [data, setData] = React.useState([
-    {
-      data: [
-        {
-          id: 0,
-          name: "default",
-          category: "sensor",
-          status: true,
-          deleted: false,
-          serial: "default",
-          greenhousesid: 0,
-        },
-      ],
-      greenhouseId: 0,
-    },
-  ]);
-
-  useEffect(() => {
-    setInterval(() => {
-      localStorage.getItem("devicesData") === null
-        ? null
-        : setData(JSON.parse(localStorage.getItem("devicesData")!));
-    }, 5000);
-  }, [localStorage.getItem("greenhouseId")]);
+  const { devicesData, activeGreenhouseId } = useContext(AppContext);
 
   return (
     <TableContainer component={Paper}>
@@ -68,38 +46,36 @@ export default function TableSensor() {
             <StyledTableCell align="right">Ações</StyledTableCell>
           </TableRow>
         </TableHead>
-        {data.map((data) => {
+        <TableBody>
+        {devicesData.map((device) => {
           if (
-            data.greenhouseId === Number(localStorage.getItem("greenhouseId"))
+            device.greenhousesid === activeGreenhouseId
           ) {
             return (
-              <TableBody>
-                {data.data.map((data) => {
-                  return data.category === "sensor" ? (
-                    <StyledTableRow key={data.id}>
-                      <StyledTableCell component="th" scope="row">
-                        {data.name}
-                      </StyledTableCell>
-                      <StyledTableCell align="right">
-                        {data.status === true ? "Ligado" : "Desligado"}
-                      </StyledTableCell>
-                      <StyledTableCell align="right">
-                        <div className="flex flex-row gap-4 justify-end items-end">
-                          <CreateIcon />
-                          <AppModalSensor
-                            button={<VisibilityIcon />}
-                            deviceId={data.id}
-                          />
-                          <DeleteIcon />
-                        </div>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  ) : null;
-                })}
-              </TableBody>
+              device.category === "sensor" ? (
+                <StyledTableRow key={device.id}>
+                  <StyledTableCell component="th" scope="row">
+                    {device.name}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {device.status === true ? "Ligado" : "Desligado"}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    <div className="flex flex-row gap-4 justify-end items-end">
+                      <CreateIcon />
+                      <AppModalSensor
+                        button={<VisibilityIcon />}
+                        deviceId={device.id}
+                      />
+                      <DeleteIcon />
+                    </div>
+                  </StyledTableCell>
+                </StyledTableRow>
+              ) : null
             );
           }
         })}
+        </TableBody>
       </Table>
     </TableContainer>
   );

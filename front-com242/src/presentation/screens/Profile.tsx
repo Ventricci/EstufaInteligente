@@ -7,8 +7,9 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import Header from "../components/Header";
 import SideBar from "../components/SideBar";
 import * as zod from 'zod'
-import { useLayoutEffect, useState, useMemo, useEffect } from "react";
+import { useLayoutEffect, useState, useMemo, useContext } from "react";
 import axios from "axios";
+import { AppContext } from "../../context/AppContext";
 
 const CssTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
@@ -56,11 +57,11 @@ type UserFormType = zod.infer<typeof userFormValidationSchema>
 
 function Profile() {
 
+  const { UserApiData, token } = useContext(AppContext)
+
   const [wasGetUser, setWasGetUser] = useState<boolean>(false)
   const [userDataRemote, setUserDataRemote] = useState<IUserDataRemote | null>(null)
   const [showPassword, setShowPassword] = useState<boolean>(false)
-
-  const UserApiDataLocal = JSON.parse(localStorage.getItem("UserApiData") || "{}")
 
   const userForm = useForm<UserFormType>({
     resolver: zodResolver(userFormValidationSchema),
@@ -84,7 +85,11 @@ function Profile() {
   }, [userForm.formState.isDirty, userForm.formState.isValid])
 
   const onSubmit = async (userData: UserFormType) => {
-    const result = await axios.put(`http://localhost:3000/users/profile/${UserApiDataLocal.id}`, userData)
+    const result = await axios.put(`http://localhost:3000/users/profile/${UserApiData.id}`, userData, {
+      headers: {
+        Authorization: token,
+      }
+    })
     const data = result.data
     alert(data.successMessage ? data.successMessage : data.errorMessage)
     setWasGetUser(false)
@@ -92,7 +97,11 @@ function Profile() {
 
   useLayoutEffect(() => {
      async function getUser () {
-      const response = await axios.get(`http://localhost:3000/users/profile/${UserApiDataLocal.id}`)
+      const response = await axios.get(`http://localhost:3000/users/profile/${UserApiData.id}`, {
+        headers: {
+          Authorization: token,
+        }
+      })
       const data = response.data
       setUserDataRemote(data)
     }
@@ -100,11 +109,7 @@ function Profile() {
       getUser()
       setWasGetUser(true)
     }
-  }, [UserApiDataLocal.id, wasGetUser])
-
-  useEffect(() => {
-    console.log(`Dados remotos: ${JSON.stringify(userDataRemote)}`)
-  }, [userDataRemote])
+  }, [UserApiData.id, token, wasGetUser])
 
   return(
     <>
