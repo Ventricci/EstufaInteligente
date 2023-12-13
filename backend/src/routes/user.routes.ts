@@ -4,11 +4,13 @@ import { AuthenticateUserController } from "../modules/user/useCases/authenticat
 import { GetUserProfileController } from "../modules/user/useCases/getUserProfile/GetUserProfileController";
 import { UpdateUserProfileController } from "../modules/user/useCases/updateUserProfile/UpdateUserProfileController";
 import { validateToken } from "./validateToken";
+import { DeleteUserController } from "../modules/user/useCases/deleteUser/DeleteUserController";
 
 const createUserController = new CreateUserController();
 const authenticateUserController = new AuthenticateUserController();
 const getUserProfileController = new GetUserProfileController();
 const updateUserProfileController = new UpdateUserProfileController();
+const deleteUserController = new DeleteUserController();
 
 const userRoutes = Router();
 
