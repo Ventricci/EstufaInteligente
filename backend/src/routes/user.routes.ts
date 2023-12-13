@@ -3,6 +3,7 @@ import { CreateUserController } from "../modules/user/useCases/createUser/Create
 import { AuthenticateUserController } from "../modules/user/useCases/authenticateUser/AuthenticateUserController";
 import { GetUserProfileController } from "../modules/user/useCases/getUserProfile/GetUserProfileController";
 import { UpdateUserProfileController } from "../modules/user/useCases/updateUserProfile/UpdateUserProfileController";
+import { validateToken } from "./validateToken";
 import { DeleteUserController } from "../modules/user/useCases/deleteUser/DeleteUserController";
 
 const createUserController = new CreateUserController();
@@ -15,8 +16,15 @@ const userRoutes = Router();
 
 userRoutes.post("/signup", createUserController.handle);
 userRoutes.post("/signin", authenticateUserController.handle);
-userRoutes.get("/profile/:userId", getUserProfileController.handle);
-userRoutes.put("/profile/:userId", updateUserProfileController.handle);
-userRoutes.delete("/profile/:userId", deleteUserController.handle);
+userRoutes.get(
+  "/profile/:userId",
+  validateToken,
+  getUserProfileController.handle
+);
+userRoutes.put(
+  "/profile/:userId",
+  validateToken,
+  updateUserProfileController.handle
+);
 
 export { userRoutes };

@@ -38,10 +38,14 @@ export class SendActuationUseCase {
     const newStatus = updatedDevice.status;
 
     if (newStatus === oldStatus)
-      throw new AppError("O dispositivo permaneceu como estava");
+      return {
+        success: false,
+        message: "O dispositivo não respondeu",
+      };
 
     return {
-      successMessage: `O dispositivo foi ${newStatus ? "ligado" : "desligado"}`,
+      success: true,
+      message: `O dispositivo foi ${newStatus ? "ligado" : "desligado"}`,
     };
   }
 }

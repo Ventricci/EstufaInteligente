@@ -13,7 +13,7 @@ interface IAuthenticateUserResponse {
   email: Users["email"];
   role: Users["role"];
   photo: Users["photo"];
-  greenhouses: Greenhouses["name"][];
+  greenhouses: Greenhouses["id"][];
 }
 
 export class AuthenticateUserUseCase {
@@ -54,7 +54,7 @@ export class AuthenticateUserUseCase {
       .then((greenhouses) => {
         return greenhouses
           ? greenhouses.map((greenhouse) => {
-              return greenhouse.name;
+              return greenhouse.id;
             })
           : [];
       });

@@ -10,8 +10,12 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import "./card.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { AppContext, IUserApiData } from "../../context/AppContext";
+import { useContext } from "react";
+
 const baseURL = "http://localhost:3000/users/signin";
-const baseUrlDevices = "http://localhost:3000/devices/list";
+
+// eslint-disable-next-line no-empty-pattern
 const ColorButton = styled(Button)<ButtonProps>(({}) => ({
   color: "#ffffff",
   backgroundColor: "#A8C686",
@@ -44,7 +48,18 @@ const CssTextField = styled(TextField)({
   },
 });
 
+
+  // interface criada para facilitar o manuseio dos dados do usuario
+  // na hora de realizar o POST de login
+interface UserLogin {
+  email: string;
+  pass: string;
+}
+
 function Card() {
+
+  const { setStateUserApiData, setStateToken } = useContext(AppContext)
+
   const [showPassword, setShowPassword] = React.useState(false);
   const navigate = useNavigate();
 
@@ -55,58 +70,40 @@ function Card() {
     event.preventDefault();
   };
 
-  // interface criada para facilitar o manuseio dos dados do usuario
-  // na hora de realizar o POST de login
-  interface UserLogin {
-    email: string;
-    pass: string;
-  }
-
   // estado usado para armazenar as informacoes do usuario e requisitar o login no post
   const [data, setData] = React.useState<Partial<UserLogin>>({});
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // obriga o usuario a preencher os dois campos: email e senha
     if (Object.values(data).length !== 2) {
       window.alert("Preencha todos os campos.");
+      return;
+    }
+    // realiza uma requisicao post com os dados armazenados em data
+    const userApiData: IUserApiData = await axios
+      .post(baseURL, {
+        email: data.email,
+        pass: data.pass,
+      })
+      .then(function (response) {
+        return response.data;
+      })
+      .catch(function (error) {
+        window.alert(error);
+        console.log(error);
+      });
+
+    if (userApiData && userApiData.auth) {
+      // salvar no localStorage
+      localStorage.setItem("userApiData", JSON.stringify(userApiData));
+      localStorage.setItem("token", JSON.stringify(userApiData.token));
+      setStateUserApiData(userApiData)
+      setStateToken(userApiData.token)
+
+      window.alert("Logado com sucesso!");
+      navigate("/dashboard");
     } else {
-      // realiza uma requisicao post com os dados armazenados em data
-      axios
-        .post(baseURL, {
-          email: data.email,
-          pass: data.pass,
-        })
-        .then(function (response) {
-          // apos obter a resposta da requisicao, salva os dados no localStorage, na variavel UserApiData
-          // esses dados serao usados para renderizar as opcoes de estufa, alem do nome associado ao usuario logado
-          localStorage.setItem("UserApiData", JSON.stringify(response.data));
-
-          const devicesData: any[] = [];
-
-          // funcao feita para armazenar os dados da estufa associadas ao usuario
-          response.data.greenhouses.map((data: any) => {
-            // apos o map, requisita um get para cada estufa associada ao usario
-            axios.get(`${baseUrlDevices}/${data}`).then((res) => {
-              // entao, faz-se um push das informacoes para devicesData
-              devicesData.push({ data: res.data, greenhouseId: data });
-
-              // chama-se a funcao stringify, pois o localStorage so armazena strings
-              localStorage.setItem("devicesData", JSON.stringify(devicesData));
-            });
-          });
-
-          // caso o codigo chegue ate aqui, o usuario eh logado
-          window.alert("Logado com sucesso!");
-
-          // e eh enviado para a dashboard
-          if (response.data.auth) {
-            navigate("/dashboard");
-          }
-        })
-        .catch(function (error) {
-          window.alert(error);
-          console.log(error);
-        });
+      window.alert("Email ou senha incorretos.");
     }
   };
 

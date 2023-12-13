@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext } from "react";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -9,6 +9,7 @@ import Paper from "@mui/material/Paper";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import AppModal from "../modals/ModalActuator";
 import { TableContainer } from "@mui/material";
+import { AppContext } from "../../../context/AppContext";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -30,33 +31,9 @@ const StyledTableRow = styled(TableRow)(({}) => ({
   },
 }));
 
-interface PropTypes {}
 
-const TableActuator: React.FC<PropTypes> = ({}) => {
-  const [data, setData] = React.useState([
-    {
-      data: [
-        {
-          id: 0,
-          name: "default",
-          category: "activation",
-          status: true,
-          deleted: false,
-          serial: "default",
-          greenhousesid: 0,
-        },
-      ],
-      greenhouseId: 0,
-    },
-  ]);
-
-  useEffect(() => {
-    setInterval(() => {
-      localStorage.getItem("devicesData") === null
-        ? null
-        : setData(JSON.parse(localStorage.getItem("devicesData")!));
-    }, 5000);
-  }, [localStorage.getItem("greenhouseId")]);
+const TableActuator = () => {
+  const { devicesData, activeGreenhouseId, active, deviceStatus } = useContext(AppContext);
 
   return (
     <TableContainer component={Paper}>
@@ -68,43 +45,41 @@ const TableActuator: React.FC<PropTypes> = ({}) => {
             <StyledTableCell align="right">Ações</StyledTableCell>
           </TableRow>
         </TableHead>
-        {data.map((data) => {
+        <TableBody>
+        {devicesData.map((device) => {
           if (
-            data.greenhouseId === Number(localStorage.getItem("greenhouseId"))
+            device.greenhousesid === activeGreenhouseId
           ) {
             return (
-              <TableBody>
-                {data.data.map((data) => {
-                  return data.category === "activation" ? (
-                    <StyledTableRow key={data.id}>
-                      <StyledTableCell component="th" scope="row">
-                        {data.name}
-                      </StyledTableCell>
-                      {localStorage.getItem("active") === "true" ? (
-                        <StyledTableCell align="right">
-                          {localStorage.getItem("deviceStatus") === "true"
-                            ? "Ligado"
-                            : "Desligado"}
-                        </StyledTableCell>
-                      ) : (
-                        <StyledTableCell align="right">
-                          {data.status === true ? "Ligado" : "Desligado"}
-                        </StyledTableCell>
-                      )}
-                      <StyledTableCell align="right">
-                        <AppModal
-                          button={<PlayArrowIcon />}
-                          onClick={undefined}
-                          id={data.id}
-                        />
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  ) : null;
-                })}
-              </TableBody>
+              device.category === "activation" ? (
+                <StyledTableRow key={device.id}>
+                  <StyledTableCell component="th" scope="row">
+                    {device.name}
+                  </StyledTableCell>
+                  {active === true ? (
+                    <StyledTableCell align="right">
+                      {deviceStatus === true
+                        ? "Ligado"
+                        : "Desligado"}
+                    </StyledTableCell>
+                  ) : (
+                    <StyledTableCell align="right">
+                      {device.status === true ? "Ligado" : "Desligado"}
+                    </StyledTableCell>
+                  )}
+                  <StyledTableCell align="right">
+                    <AppModal
+                      button={<PlayArrowIcon />}
+                      onClick={undefined}
+                      id={device.id}
+                    />
+                  </StyledTableCell>
+                </StyledTableRow>
+              ) : null
             );
           }
         })}
+        </TableBody>
       </Table>
     </TableContainer>
   );

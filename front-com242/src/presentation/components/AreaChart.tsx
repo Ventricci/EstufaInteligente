@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   Area,
   XAxis,
@@ -12,16 +12,12 @@ import Button from "@mui/material/Button";
 import axios from "axios";
 import DatePickerApp from "./DatePicker";
 import { format } from "date-fns";
-import { SelectChangeEvent } from "@mui/material/Select";
-
-const baseUrlIdeal = "http://localhost:3000/greenhouses/";
+import { AppContext } from "../../context/AppContext";
 const baseUrlStatic = "http://localhost:3000/readings/interval";
 
 export default function App() {
-  // retorna as estufas disponiveis a partir do localStorage setado em Card
-  const selectValues = JSON.parse(localStorage.getItem("UserApiData")!);
-  // seta um estado para o Id do dispositivo
-  const [deviceId, setDeviceId] = React.useState<number>();
+  const { userGreenhouses, activeGreenhouseId, setStateActiveGreenhouseId, token } = useContext(AppContext);
+
   // seta um estado para a grandeza
   const [greatness, setGreatness] = React.useState<string>();
   // seta um estado para a data inicial
@@ -30,8 +26,6 @@ export default function App() {
   const [finalDate, setFinalDate] = React.useState<Date>();
   // seta uma estado para os dados estaticos
   const [dataStatic, setDataStatic] = React.useState([{}]);
-  // seta uma estado para a temperatura ideal
-  const [idealTemperature, setIdealTemperature] = React.useState([{}]);
   // seta uma flag usado para logica de renderizacao do grafico
   const [average, setAverage] = React.useState(false);
   // seta um estado para implementar uma array de dados ideias (essenciais para fazer a linha media no grafico)
@@ -43,54 +37,56 @@ export default function App() {
     // limpa os valores da variavel idealTemperatureArray
     setIdealTemperatureArray([{}]);
 
-    // realiza uma requisicao get para pegar a temperatura ideal
-    axios.get(`${baseUrlIdeal}/${deviceId}`, {}).then((res) => {
-      setIdealTemperature(res.data);
-    });
-
     // realiza uma requisicao get para pegar os dados estaticos
     await axios
       .get(
-        `${baseUrlStatic}/${deviceId}/${greatness}/${format(
+        `${baseUrlStatic}/${activeGreenhouseId}/${greatness}/${format(
           initialDate as Date,
           "yyyy-MM-dd'T'HH:mm:ss"
         )}/${format(finalDate as Date, "yyyy-MM-dd'T'HH:mm:ss")}`,
-        {}
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
       )
       .then((response) => {
         // apos obter a resposta, seta os dados dinamicos
         setDataStatic(response.data[0].readings);
 
-        // a seguir, ha uma logica necessaria para renderizar a linha media no grafico
-        // o set abaixo popula o array idealTemperatureArray com o tamanho dos dados estaticos
-        setIdealTemperatureArray(
-          Array(dataStatic.length).fill(idealTemperature[0])
-        );
       })
       .catch((error) => {
         console.log(error);
       });
+
+    // a seguir, ha uma logica necessaria para renderizar a linha media no grafico
+    // o set abaixo popula o array idealTemperatureArray com o tamanho dos dados estaticos
+    setIdealTemperatureArray(
+      Array(dataStatic.length).fill({
+        idealtemperature: userGreenhouses.find(
+          (greenhouse) => greenhouse.id === activeGreenhouseId
+        )?.idealtemperature,
+      })
+    );
+
 
     setAverage(true);
   }
 
   // useEffect contendo os dados que necessitam de atualizacao, para renderizacao "ao vivo" dos dados
   useEffect(() => {
-    localStorage.setItem("greenhouseId", deviceId ? deviceId.toString() : "0");
-    idealTemperature;
+    setStateActiveGreenhouseId(activeGreenhouseId);
     dataStatic;
     idealTemperatureArray;
-  }, [deviceId, average]);
+  }, [activeGreenhouseId, dataStatic, idealTemperatureArray, setStateActiveGreenhouseId]);
 
-  // const feito para atualizar o valor do deviceId, dependendo da escolha do usuario
-  const handleOnChange = (e: SelectChangeEvent<string>) => {
-    e.preventDefault();
-    setDeviceId(Number(e.target.value));
-  };
+  useEffect(() => {
+    console.log(`Greenhouses: ${JSON.stringify(userGreenhouses)}`);
+  }, [userGreenhouses]);
 
   return (
     <div className="bg-white h-[600px] w-[1900px] flex flex-row justify-center items-center">
-      <div className="flex flex-col">
+      <div className="flex flex-col">      
         <h2 className="p-8 text-[25px] font-sans font-bold">
           Média de variação das condições da estufa
         </h2>
@@ -128,11 +124,11 @@ export default function App() {
         </ComposedChart>
       </div>
       <div className="flex flex-col">
-        <MultipleSelect
+        {/* <MultipleSelect
           name={"Estufa"}
           select={selectValues.greenhouses}
           onChange={(e) => handleOnChange(e)}
-        />
+        /> */}
         <MultipleSelect
           name={"Grandeza"}
           select={["Temperatura", "Umidade"]}

@@ -3,6 +3,8 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import axios from "axios";
+import { useContext, useEffect, useState } from "react";
+import { AppContext } from "../../../context/AppContext";
 
 const baseURL = "http://localhost:3000/actuation";
 
@@ -25,52 +27,53 @@ interface PropTypes {
 }
 
 const AppModal: React.FC<PropTypes> = ({ button, id }) => {
-  const [open, setOpen] = React.useState(false);
+
+  const { token, setStateActive, active } = useContext(AppContext);
+
+  const [open, setOpen] = useState(false);
+  const [isActuated, setIsActuated] =useState(false);
+  const [message, setMessage] = useState("");
+
   const handleClose = () => {
-  if (active === true) {
-  setOpen(false);
-  setActive(false);
-  }
+    setOpen(false);
+    setStateActive(false);
+    setMessage("");
   };
 
-  // estado que obriga o modal a esperar 10000ms antes de renderizar a resposta
-  // isso da tempo para a requisicao bater no back e retornar para o front
-  const [active, setActive] = React.useState(false);
-
-  // estado associado a variavel deviceStatus da resposta da requisicao (usado para
-  // atualizar os valores no useEffect)
-  const [deviceStatus, setDeviceStatus] = React.useState(false);
-
-  // estado associado a variavel successMessage da resposta da requisicao (usado para
-  // mudar a mensagem no modal, de acordo com a resposta da requisicao)
-  const [message, setMessage] = React.useState("Falha no Dispositivo");
 
   async function handleActive() {
     // ao clicar no botao e chamar a funcao, abre-se o modal
     setOpen(true);
-     
-    // seta 60000ms para que, apos esse tempo, a flag permita a resposta ser renderizada no modal
-    setTimeout(() => setActive(true), 6000);
+
+    setTimeout(() => {
+      handleClose();
+    }, 7000);
 
     await axios
       // requisicao post que passa a baseURL da requisicao, alem do id (recebido como prop)
-      .post(`${baseURL}/${id}`, {})
+      .post(`${baseURL}/${id}`, {}, {
+        headers: {
+          Authorization: token},
+        },
+      )
       .then((response) => {
-        // com a resposta da requisicao, seta-se os valores para os estados
-        setDeviceStatus(response.data.deviceStatus);
-        setMessage(response.data.successMessage);
-        
-        localStorage.setItem("active", "true");
+        setIsActuated(response.data.success);
+        setMessage(response.data.message);
       })
       .catch((error) => {
         console.log(error);
+        window.alert("Erro ao enviar a requisição");
       });
   }
 
-  // useEffect usado para atualizar os valores active e deviceStatus, dentro do localStorage
-  React.useEffect(() => {
-    localStorage.setItem("deviceStatus", deviceStatus.toString());
-  }, [active, deviceStatus]);
+  useEffect(() => {
+    if (message !== "") setStateActive(true);
+    else setStateActive(false);
+  }, [message, setStateActive]);
+
+  useEffect(() => {
+    console.log(`Token: ${token}`);
+  }, [token]);
 
   return (
     <div>
@@ -92,8 +95,7 @@ const AppModal: React.FC<PropTypes> = ({ button, id }) => {
             // as diferentes respostas da requisicao
             <>
               <Typography id="modal-modal-title" variant="h6" component="h2">
-                {message === "O dispositivo permaneceu no mesmo status." ||
-                message === "Falha no Dispositivo"
+                {isActuated === false
                   ? "Atenção!"
                   : "Sucesso!"}
               </Typography>

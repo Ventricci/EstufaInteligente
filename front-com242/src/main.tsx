@@ -6,9 +6,13 @@ import SignUp from "./presentation/screens/signup/SignUp";
 import "./index.css";
 import { BrowserRouter, Routes, Route} from "react-router-dom";
 import Profile from "./presentation/screens/Profile";
+
+import { AppProvider } from "./context/AppContext";
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
+    <AppProvider>
     <Routes>
       <Route path="/" element={<SignIn />}/>
       <Route path="/signin" element={<SignIn />}/>
@@ -17,6 +21,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <Route path="/profile" element={<Profile />}/>
 
     </Routes>
+    </AppProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

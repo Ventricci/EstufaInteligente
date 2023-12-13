@@ -2,10 +2,11 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Popper from "@mui/material/Popper";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { AppContext } from "../../context/AppContext";
 
 export default function SimplePopper() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const data = JSON.parse(localStorage.getItem("UserApiData")!);
+  const { UserApiData } = React.useContext(AppContext);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
@@ -16,7 +17,7 @@ export default function SimplePopper() {
 
   return (
     <div className="flex flex-row">
-      <p className="text-[20px] mr-4">{data.name}</p>
+      <p className="text-[20px] mr-4">{UserApiData.name}</p>
       <button aria-describedby={id} type="button" onClick={handleClick}>
         <ArrowDropDownIcon />
       </button>
