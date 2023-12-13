@@ -6,6 +6,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { AppError } from "./errors/AppError";
 
+import { listActuationRoutes } from "./routes/actuation.routes";
+import { listDevicesRoutes } from "./routes/devices.routes";
+import { listGreenhousesRoutes } from "./routes/greenhouses.routes";
+import { listReadingsRoutes } from "./routes/readings.routes";
+import { listUserRoutes } from "./routes/user.routes";
+
 dotenv.config();
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3333;
@@ -37,6 +43,12 @@ app.use(
     });
   }
 );
+
+listActuationRoutes();
+listDevicesRoutes();
+listGreenhousesRoutes();
+listReadingsRoutes();
+listUserRoutes();
 
 app.listen(port, () => {
   console.log(`[SERVER] Running on port ${port}  🚀`);

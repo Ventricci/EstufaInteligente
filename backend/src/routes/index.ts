@@ -8,6 +8,12 @@ import { greenhousesRoutes } from "./greenhouses.routes";
 
 const routes = Router();
 
+export interface IRoute {
+  method: string;
+  path: string;
+  body?: any;
+}
+
 routes.use("/users", userRoutes);
 routes.use("/actuation", validateToken, actuationRoutes);
 routes.use("/readings", validateToken, readingsRoutes);

@@ -1,0 +1,21 @@
+[
+  {
+    "method": "POST",
+    "path": "devices/create",
+    "body": {
+      "name": "Nome do dispositivo",
+      "category": "Categoria do dispositivo",
+      "status": "Status do dispositivo",
+      "serial": "Serial do dispositivo",
+      "greenhouseId": "id"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "devices/status/:deviceId"
+  },
+  {
+    "method": "GET",
+    "path": "devices/list/:greenhouseId"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "method": "GET",
+    "path": "greenhouses/listGreenhouses"
+  },
+  {
+    "method": "GET",
+    "path": "greenhouses/:greenhouseId"
+  },
+  {
+    "method": "POST",
+    "path": "greenhouses/create",
+    "body": {
+      "name": "Estufa 1",
+      "idealTemperature": 25,
+      "idealHumidity": 50,
+      "address_id": 1
+    }
+  }
+]
