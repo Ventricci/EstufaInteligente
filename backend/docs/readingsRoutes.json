@@ -1,0 +1,14 @@
+[
+  {
+    "method": "GET",
+    "path": "readings/interval/:greenhousesid/:greatness/:initialDate/:finalDate"
+  },
+  {
+    "method": "GET",
+    "path": "readings/last/:deviceId/:greatness"
+  },
+  {
+    "method": "GET",
+    "path": "readings/latest/:deviceId/:greatness/:initialDate"
+  }
+]

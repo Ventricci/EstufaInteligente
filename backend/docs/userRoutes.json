@@ -1,0 +1,45 @@
+[
+  {
+    "method": "POST",
+    "path": "users/signup",
+    "body": {
+      "name": "Nome do usuário",
+      "cpf": "12345678910",
+      "email": "usuario@email.com",
+      "pass": "senha",
+      "cep": "11222333",
+      "street": "Rua do Usuário",
+      "houseNumber": 123,
+      "district": "Bairro do Usuário",
+      "city": "Cidade do Usuário",
+      "state": "UF",
+      "adjunct": "Complemento do Usuário"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "users/signin",
+    "body": {
+      "email": "usuariocadastrado@email.com",
+      "pass": "senhaDoUsuarioCadastrado"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/signin"
+  },
+  {
+    "method": "GET",
+    "path": "users/profile/:userId"
+  },
+  {
+    "method": "PUT",
+    "path": "users/update-profile/:userId",
+    "body": {
+      "name": "Novo nome do usuário",
+      "cpf": "12345678910",
+      "email": "novoemaildousuario@email.com",
+      "password": "NovaSenha"
+    }
+  }
+]
