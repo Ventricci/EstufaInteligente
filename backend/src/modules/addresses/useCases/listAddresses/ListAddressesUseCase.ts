@@ -3,28 +3,30 @@ import { prisma } from "../../../../prisma/client";
 import { AppError } from "../../../../errors/AppError";
 
 export class ListAddressesUseCase {
-  async execute(userId: number): Promise<Addresses[]> {
-    const userExists = await prisma.users.findUnique({
+  async execute(user_cpf: string): Promise<Addresses[]> {
+    const user_id = await prisma.users.findFirst({
+      select: {
+        id: true,
+      },
       where: {
-        id: userId,
+        cpf: user_cpf,
       },
     });
 
-    if (!userExists) throw new AppError("Usuário não existe!");
+    if (!user_id) throw new AppError("Usuário com este CPF não encontrado");
 
-    const userAddresses = await prisma.addresses.findMany({
+    const addresses = await prisma.addresses.findMany({
       where: {
         users_adresses: {
           some: {
-            usersid: userId,
+            usersid: user_id.id,
           },
         },
       },
     });
 
-    if (!userAddresses)
-      throw new AppError("Este usuário não possui endereços cadastrados!");
+    if (!addresses) throw new AppError("Não foi possível listar os endereços");
 
-    return userAddresses;
+    return addresses;
   }
 }
