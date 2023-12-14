@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { SendActuationController } from "../modules/mqtt/useCases/sendActuation/SendActuationController";
-import { mqttClient } from "../server";
 
 import fs from "fs";
 import { IRoute } from ".";
