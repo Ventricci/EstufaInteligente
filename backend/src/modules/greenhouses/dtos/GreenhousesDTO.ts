@@ -9,3 +9,12 @@ export interface CreateGreenhouseDTO {
 export interface ListGreenhousesDTO {
   user_cpf: string;
 }
+
+export interface UpdateGreenhouseDTO {
+  id: number;
+  name?: string;
+  idealTemperature?: number;
+  idealHumidity?: number;
+  user_cpf?: string;
+  address_id?: number;
+}
