@@ -37,6 +37,8 @@ export interface GreenhouseData {
 }
 
 interface IAppContextProps {
+  authenticated: boolean;
+  setStateAuthenticated: (value: boolean) => void;
   active: boolean;
   setStateActive: (value: boolean) => void;
   deviceStatus: boolean;
@@ -60,6 +62,7 @@ interface AppProviderProps {
 }
 
 export function AppProvider({ children }: AppProviderProps) {
+  const [authenticated, setAuthenticated] = useState<boolean>(false);
   const [active, setActive] = useState<boolean>(false);
   const [deviceStatus, setDeviceStatus] = useState<boolean>(false);
   const [activeGreenhouseId, setActiveGreenhouseId] = useState<number>(0);
@@ -77,6 +80,10 @@ export function AppProvider({ children }: AppProviderProps) {
   const [token, setToken] = useState<string>('');
   const [devicesData, setDevicesData] = useState<IDevicesData[]>([]);
   const [userGreenhouses, setUserGreenhouses] = useState<GreenhouseData[]>([]);
+
+  function setStateAuthenticated(value: boolean) {
+    setAuthenticated(value);
+  }
 
   function setStateActive(value: boolean) {
     setActive(value);
@@ -115,14 +122,20 @@ export function AppProvider({ children }: AppProviderProps) {
   }
 
   useEffect(() => {
-    const userApiDataLocal = localStorage.getItem('userApiData');
+    const userApiDataLocal = JSON.parse(localStorage.getItem('userApiData') || '{}');
     const tokenLocal = localStorage.getItem('token');
-    if (userApiDataLocal) {
-      setUserApiData(JSON.parse(userApiDataLocal));
+    if (userApiDataLocal.auth) {
+      setUserApiData(userApiDataLocal);
+      setAuthenticated(true);
+    } else {
+      setAuthenticated(false);
     }
 
     if (tokenLocal) {
       setToken(JSON.parse(tokenLocal));
+      setAuthenticated(true);
+    } else {
+      setAuthenticated(false);
     }
   }, []);
 
@@ -167,6 +180,8 @@ export function AppProvider({ children }: AppProviderProps) {
   return (
     <AppContext.Provider
       value={{
+        authenticated,
+        setStateAuthenticated,
         active,
         setStateActive,
         deviceStatus,
