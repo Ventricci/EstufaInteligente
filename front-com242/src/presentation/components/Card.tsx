@@ -58,7 +58,7 @@ interface UserLogin {
 
 function Card() {
 
-  const { setStateUserApiData, setStateToken } = useContext(AppContext)
+  const { setStateUserApiData, setStateToken, setStateAuthenticated } = useContext(AppContext)
 
   const [showPassword, setShowPassword] = React.useState(false);
   const navigate = useNavigate();
@@ -99,9 +99,12 @@ function Card() {
       localStorage.setItem("token", JSON.stringify(userApiData.token));
       setStateUserApiData(userApiData)
       setStateToken(userApiData.token)
+      setStateAuthenticated(true)
 
       window.alert("Logado com sucesso!");
-      navigate("/dashboard");
+      navigate("/dashboard", {
+        replace: true,
+      });
     } else {
       window.alert("Email ou senha incorretos.");
     }
