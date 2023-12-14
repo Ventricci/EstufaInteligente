@@ -1,11 +1,11 @@
 [
   {
     "method": "GET",
-    "path": "greenhouses/listGreenhouses"
+    "path": "greenhouses/list"
   },
   {
     "method": "GET",
-    "path": "greenhouses/:greenhouseId"
+    "path": "greenhouses/get/:greenhouseId"
   },
   {
     "method": "POST",
@@ -16,5 +16,19 @@
       "idealHumidity": 50,
       "address_id": 1
     }
+  },
+  {
+    "method": "PUT",
+    "path": "greenhouses/update/:id",
+    "body": {
+      "name": "Estufa 1",
+      "idealTemperature": 30,
+      "idealHumidity": 60,
+      "address_id": 1
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "greenhouses/delete/:id"
   }
 ]

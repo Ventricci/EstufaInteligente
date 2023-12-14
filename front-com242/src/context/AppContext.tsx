@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createContext, useEffect, useState } from 'react';
 
-const baseUrlGreenhouse = "http://localhost:3000/greenhouses";
+const baseUrlGetGreenhouse = "http://localhost:3000/greenhouses/get";
 const baseUrlDevices = "http://localhost:3000/devices/list";
 
 export interface IUserApiData {
@@ -145,7 +145,7 @@ export function AppProvider({ children }: AppProviderProps) {
 
     const run = async () => {
       UserApiData.greenhouses.forEach(async (greenhouseId) => {
-        await axios.get(`${baseUrlGreenhouse}/${greenhouseId}`, {
+        await axios.get(`${baseUrlGetGreenhouse}/${greenhouseId}`, {
           headers: {
             Authorization: token,
           },
