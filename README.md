@@ -112,6 +112,8 @@ Alexsander Ventricci [](mailto://alexsander.ventricci@gmail.com) – alexsander.
 
 Augusto Lázaro Raimundo [](mailto://augusto.lr06@gmail.com) – augusto.lr06@gmail.com
 
+Thais Danieli Branco de Souza  [](mailto://thaisdesouza311@gmail.com) - thaisdesouza311@gmail.com
+
 Distribuído sob a licença ISC. Veja `LICENSE` para mais informações.
 
 ## Contribuição
